@@ -3,911 +3,1090 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Axolotl Visuals — TargetESP tactical suite</title>
+<title>Axolotl Visuals — 20 живых TargetESP эффектов</title>
 
-<meta name="description" content="20 TargetESP эффектов для Minecraft Fabric. Тактический интерфейс, чистая геометрия, ноль лишнего." />
-<meta name="theme-color" content="#05070A" />
+<meta name="description" content="20 TargetESP эффектов для Minecraft Fabric 1.21.11. Открытый код, один .jar, ноль лишнего." />
+<meta name="theme-color" content="#08080a" />
 
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Axolotl Visuals — TargetESP tactical suite" />
-<meta property="og:description" content="20 TargetESP эффектов. Тактический интерфейс, чистая геометрия." />
-<meta property="og:url" content="https://PythonExeCoder.github.io/axolotlvisuals/" />
-<meta property="og:image" content="https://PythonExeCoder.github.io/axolotlvisuals/preview.png" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308080a'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23b3ff1a' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23b3ff1a'/%3E%3C/svg%3E" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2305070A'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23FF6B1A' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23FF6B1A'/%3E%3Cline x1='32' y1='6' x2='32' y2='18' stroke='%23FF6B1A' stroke-width='3'/%3E%3Cline x1='32' y1='46' x2='32' y2='58' stroke='%23FF6B1A' stroke-width='3'/%3E%3Cline x1='6' y1='32' x2='18' y2='32' stroke='%23FF6B1A' stroke-width='3'/%3E%3Cline x1='46' y1='32' x2='58' y2='32' stroke='%23FF6B1A' stroke-width='3'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
   /* ==================== Base ==================== */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #05070A;
-    --panel: #0E1218;
-    --panel-2: #141A22;
-    --line: rgba(255,255,255,0.08);
-    --line-hot: rgba(255,107,26,0.35);
-    --text: #E8EAF0;
-    --text-dim: rgba(232,234,240,0.55);
-    --text-mute: rgba(232,234,240,0.3);
-    --accent: #FF6B1A;
-    --accent-hot: #FF2E2E;
-    --accent-cold: #22D3EE;
-    --ok: #4ADE80;
+    --bg: #08080a;
+    --bg-2: #0d0d11;
+    --surface: #111116;
+    --surface-2: #16161c;
+    --border: rgba(255,255,255,0.07);
+    --border-2: rgba(255,255,255,0.14);
+    --text: #f0f0f4;
+    --text-2: #a0a0ac;
+    --text-3: #5a5a64;
+    --lime: #b3ff1a;
+    --pink: #ff3d8b;
+    --cyan: #3dd5ff;
+    --yellow: #ffd53d;
+    --violet: #a78bfa;
   }
 
   html { scroll-behavior: smooth; overflow-x: hidden; }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     cursor: none;
-    position: relative;
-    min-height: 100vh;
+    font-feature-settings: "cv11", "ss01";
   }
   @media (pointer: coarse) {
     body { cursor: auto; }
-    .cur, .cur-frame, .cur-dot { display: none !important; }
+    .reticle, .reticle-outer { display: none !important; }
   }
 
-  /* Акцентная сетка */
+  ::selection { background: var(--lime); color: var(--bg); }
+  ::-webkit-scrollbar { width: 10px; background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #26262e; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--lime); }
+
+  /* Noise overlay */
   body::before {
     content: '';
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(255,107,26,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,107,26,0.035) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 75%);
-  }
-
-  /* Сканлайны */
-  body::after {
-    content: '';
-    position: fixed; inset: 0; z-index: 95; pointer-events: none;
-    background: repeating-linear-gradient(0deg,
-      transparent 0, transparent 3px,
-      rgba(255,107,26,0.012) 3px, rgba(255,107,26,0.012) 4px);
+    position: fixed; inset: 0; z-index: 9998;
+    pointer-events: none;
+    opacity: 0.35;
     mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   }
 
-  ::selection { background: var(--accent); color: var(--bg); }
-  ::-webkit-scrollbar { width: 10px; background: var(--bg); }
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--accent), var(--accent-hot));
-    border-radius: 0;
+  /* ==================== Preloader ==================== */
+  .boot {
+    position: fixed; inset: 0; z-index: 10000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity .5s ease, visibility .5s;
+  }
+  .boot.done { opacity: 0; visibility: hidden; }
+
+  .boot__inner {
+    width: min(520px, 90vw);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-2);
   }
 
-  /* ==================== Дождь ==================== */
-  #rain {
-    position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    opacity: 0.55;
+  .boot__line {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: bootLine .3s forwards;
+  }
+  .boot__line::before {
+    content: '›';
+    color: var(--lime);
+  }
+  .boot__line span { color: var(--text-3); margin-left: auto; }
+  .boot__line.ok span { color: var(--lime); }
+  .boot__line:nth-child(1) { animation-delay: .05s; }
+  .boot__line:nth-child(2) { animation-delay: .2s; }
+  .boot__line:nth-child(3) { animation-delay: .35s; }
+  .boot__line:nth-child(4) { animation-delay: .5s; }
+  .boot__line:nth-child(5) { animation-delay: .65s; }
+  @keyframes bootLine {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
-  /* ==================== Курсор ==================== */
-  .cur {
-    position: fixed; top: 0; left: 0; z-index: 9999;
-    pointer-events: none; transform: translate(-50%, -50%);
-    width: 20px; height: 20px;
-    transition: transform .06s linear;
+  .boot__bar {
+    margin-top: 24px;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
   }
-  .cur::before,
-  .cur::after {
-    content: ''; position: absolute; left: 50%; top: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
+  .boot__bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    width: 0;
+    background: var(--lime);
+    animation: bootBar 1.2s .3s cubic-bezier(.4,0,.2,1) forwards;
+    box-shadow: 0 0 12px var(--lime);
+  }
+  @keyframes bootBar {
+    to { width: 100%; }
+  }
+
+  /* ==================== Reticle cursor ==================== */
+  .reticle {
+    position: fixed; top: 0; left: 0;
+    z-index: 9999;
+    width: 24px; height: 24px;
+    pointer-events: none;
     transform: translate(-50%, -50%);
+    transition: transform .04s linear;
   }
-  .cur::before { width: 20px; height: 2px; }
-  .cur::after  { width: 2px; height: 20px; }
+  .reticle::before,
+  .reticle::after {
+    content: ''; position: absolute;
+    background: var(--lime);
+    box-shadow: 0 0 8px rgba(179,255,26,0.7);
+  }
+  .reticle::before {
+    left: 50%; top: -6px; bottom: -6px;
+    width: 1px; transform: translateX(-50%);
+  }
+  .reticle::after {
+    top: 50%; left: -6px; right: -6px;
+    height: 1px; transform: translateY(-50%);
+  }
 
-  .cur-frame {
-    position: fixed; top: 0; left: 0; z-index: 9998;
-    pointer-events: none; transform: translate(-50%, -50%);
-    width: 38px; height: 38px;
+  .reticle-outer {
+    position: fixed; top: 0; left: 0;
+    z-index: 9998;
+    width: 44px; height: 44px;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
     transition: width .25s cubic-bezier(.2,.8,.2,1),
                 height .25s cubic-bezier(.2,.8,.2,1),
-                opacity .25s;
-  }
-  .cur-frame span {
-    position: absolute; width: 10px; height: 10px;
-    border: 2px solid var(--accent);
-    transition: border-color .25s, transform .25s;
-  }
-  .cur-frame .tl { top: 0; left: 0; border-right: none; border-bottom: none; }
-  .cur-frame .tr { top: 0; right: 0; border-left: none; border-bottom: none; }
-  .cur-frame .bl { bottom: 0; left: 0; border-right: none; border-top: none; }
-  .cur-frame .br { bottom: 0; right: 0; border-left: none; border-top: none; }
-
-  .cur-frame.lock {
-    width: 60px; height: 60px;
-  }
-  .cur-frame.lock span {
-    border-color: var(--accent-hot);
-    box-shadow: 0 0 10px var(--accent-hot);
-  }
-  .cur-frame.click {
-    width: 26px; height: 26px;
-  }
-  .cur-frame.click span { border-color: var(--accent-hot); }
-
-  .cur-dot {
-    position: fixed; z-index: 9997; top: 0; left: 0;
-    width: 4px; height: 4px;
-    background: var(--accent);
+                border-color .25s;
+    border: 1px solid rgba(179,255,26,0.4);
     border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 12px var(--accent);
-    pointer-events: none;
-    transition: opacity .3s;
+  }
+  .reticle-outer.lock {
+    width: 64px; height: 64px;
+    border-color: var(--pink);
+    box-shadow: 0 0 24px rgba(255,61,139,0.35), inset 0 0 16px rgba(255,61,139,0.15);
+  }
+  .reticle-outer.click {
+    width: 26px; height: 26px;
+    border-color: var(--yellow);
   }
 
-  /* ==================== Progress bar ==================== */
-  .progress {
-    position: fixed; top: 0; left: 0; right: 0; height: 2px;
-    z-index: 200; background: transparent;
-  }
-  .progress__bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-hot), var(--accent), var(--accent-cold));
-    width: 0%;
-    box-shadow: 0 0 12px var(--accent);
-    transition: width .1s linear;
-  }
-
-  /* ==================== Навигация ==================== */
+  /* ==================== Nav ==================== */
   .nav {
-    position: fixed; top: 2px; left: 0; right: 0;
-    z-index: 100;
-    padding: 22px 42px;
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 200;
+    padding: 20px 40px;
     display: flex; align-items: center; justify-content: space-between;
-    background: rgba(5,7,10,0.72);
-    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: rgba(8,8,10,0.72);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid transparent;
     transition: border-color .3s, background .3s;
   }
-  .nav.on { border-bottom-color: var(--line); background: rgba(5,7,10,0.9); }
-
-  .logo {
-    display: flex; align-items: center; gap: 12px;
-    font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
-    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--text); text-decoration: none;
+  .nav.on {
+    border-bottom-color: var(--border);
+    background: rgba(8,8,10,0.92);
   }
-  .logo__mark {
+
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--text); text-decoration: none;
+    font-weight: 700; font-size: 14px;
+    letter-spacing: -0.01em;
+  }
+  .brand__mark {
     width: 26px; height: 26px;
     position: relative;
-    border: 2px solid var(--accent);
-    box-shadow: 0 0 12px rgba(255,107,26,0.5);
+    border-radius: 50%;
+    background: conic-gradient(from 90deg, var(--lime), var(--cyan), var(--pink), var(--lime));
+    animation: brandSpin 8s linear infinite;
+    display: grid; place-items: center;
   }
-  .logo__mark::before,
-  .logo__mark::after {
-    content: ''; position: absolute; background: var(--accent);
+  .brand__mark::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    background: var(--bg);
+    border-radius: 50%;
   }
-  .logo__mark::before { left: 50%; top: -8px; bottom: -8px; width: 2px; transform: translateX(-50%); }
-  .logo__mark::after  { top: 50%; left: -8px; right: -8px; height: 2px; transform: translateY(-50%); }
-  .logo__mark i {
-    position: absolute; inset: 6px;
-    background: var(--accent); border-radius: 50%;
-    box-shadow: 0 0 12px var(--accent);
-    animation: pulse-logo 2s ease-in-out infinite;
+  .brand__mark::before {
+    content: '';
+    position: absolute;
+    inset: 11px;
+    background: var(--lime);
+    border-radius: 50%;
+    z-index: 1;
+    box-shadow: 0 0 10px var(--lime);
   }
-  @keyframes pulse-logo {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50%      { transform: scale(0.6); opacity: 0.6; }
+  @keyframes brandSpin {
+    to { transform: rotate(360deg); }
   }
-  .logo__suffix { color: var(--text-mute); margin-left: 4px; }
+  .brand__suffix {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--text-3);
+  }
 
   .nav__links {
-    display: flex; gap: 34px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex; gap: 30px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
   }
   .nav__links a {
-    color: var(--text-dim); text-decoration: none;
-    position: relative; padding: 6px 0;
-    transition: color .25s;
+    color: var(--text-2); text-decoration: none;
+    transition: color .2s;
+    position: relative;
   }
   .nav__links a::before {
-    content: '> '; color: var(--accent); opacity: 0;
-    margin-right: -12px; transition: opacity .2s, margin-right .2s;
+    content: '';
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0; height: 1px;
+    background: var(--lime);
+    transition: width .3s;
   }
-  .nav__links a:hover { color: var(--accent); }
-  .nav__links a:hover::before { opacity: 1; margin-right: 0; }
+  .nav__links a:hover { color: var(--lime); }
+  .nav__links a:hover::before { width: 100%; }
 
-  .nav__right { display: flex; align-items: center; gap: 14px; }
+  .nav__actions { display: flex; align-items: center; gap: 12px; }
 
-  .btn-ghost {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 9px 16px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-dim); text-decoration: none;
-    border: 1px solid var(--line);
-    background: transparent;
-    transition: color .25s, border-color .25s, background .25s;
-  }
-  .btn-ghost:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-    background: rgba(255,107,26,0.08);
-  }
-  .btn-ghost svg { width: 14px; height: 14px; }
-
-  .btn-solid {
+  .btn {
     display: inline-flex; align-items: center; gap: 10px;
-    padding: 11px 20px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--bg); text-decoration: none;
-    background: var(--accent);
-    border: 1px solid var(--accent);
+    padding: 12px 22px;
+    border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none; cursor: none;
+    transition: all .25s cubic-bezier(.2,.8,.2,1);
+    border: 1px solid transparent;
     position: relative;
-    transition: background .25s, box-shadow .25s, transform .25s;
-    box-shadow: 0 0 20px rgba(255,107,26,0.35);
+    overflow: hidden;
   }
-  .btn-solid:hover {
-    background: var(--accent-hot);
-    border-color: var(--accent-hot);
-    box-shadow: 0 0 30px rgba(255,46,46,0.6);
-    transform: translateY(-1px);
+  .btn--primary {
+    background: var(--lime);
+    color: var(--bg);
+    box-shadow: 0 0 30px rgba(179,255,26,0.35);
   }
-  .btn-solid svg { width: 14px; height: 14px; }
+  .btn--primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.5), transparent 80%);
+    transform: translateX(-100%);
+    transition: transform .7s;
+  }
+  .btn--primary:hover::before { transform: translateX(100%); }
+  .btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 50px rgba(179,255,26,0.6);
+  }
+  .btn--ghost {
+    color: var(--text);
+    border-color: var(--border-2);
+    background: transparent;
+  }
+  .btn--ghost:hover {
+    border-color: var(--lime);
+    color: var(--lime);
+    background: rgba(179,255,26,0.06);
+  }
+  .btn svg { width: 14px; height: 14px; }
+  .btn--small { padding: 9px 16px; font-size: 12px; }
 
   @media (max-width: 900px) {
     .nav { padding: 16px 20px; }
     .nav__links { display: none; }
-    .logo__suffix { display: none; }
+    .brand__suffix { display: none; }
   }
 
-  /* ==================== Общие контейнеры ==================== */
+  /* ==================== Wrap ==================== */
   .wrap {
-    position: relative; z-index: 2;
-    max-width: 1240px; margin: 0 auto;
-    padding: 0 42px;
+    position: relative;
+    z-index: 2;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 40px;
   }
-  @media (max-width: 700px) { .wrap { padding: 0 20px; } }
+  @media (max-width: 700px) { .wrap { padding: 0 18px; } }
 
   /* ==================== Hero ==================== */
   .hero {
-    padding: 150px 0 90px;
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 70px;
-    align-items: center;
+    padding: 140px 0 60px;
     min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center;
     position: relative;
   }
+
+  .hero__head {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-bottom: 60px;
+  }
   @media (max-width: 1000px) {
-    .hero { grid-template-columns: 1fr; gap: 50px; padding: 130px 0 60px; min-height: auto; }
+    .hero__head { grid-template-columns: 1fr; gap: 40px; }
   }
 
   .hero__eyebrow {
     display: inline-flex; align-items: center; gap: 10px;
-    padding: 6px 14px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--accent);
-    border: 1px solid var(--line-hot);
-    background: rgba(255,107,26,0.06);
+    padding: 7px 14px;
+    border-radius: 100px;
+    background: rgba(179,255,26,0.08);
+    border: 1px solid rgba(179,255,26,0.25);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--lime);
+    letter-spacing: 0.08em;
     margin-bottom: 32px;
-    opacity: 0; animation: riseIn .8s .1s forwards;
+    opacity: 0; animation: fadeUp .8s .1s forwards;
   }
   .hero__eyebrow i {
     width: 6px; height: 6px;
-    background: var(--accent);
     border-radius: 50%;
-    box-shadow: 0 0 10px var(--accent);
-    animation: blink 1.4s ease-in-out infinite;
+    background: var(--lime);
+    box-shadow: 0 0 10px var(--lime);
+    animation: pulse 1.5s ease-in-out infinite;
   }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0.3; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.7); }
   }
-
-  .hero__title {
-    font-family: 'Inter', sans-serif;
-    font-weight: 800;
-    font-size: clamp(48px, 7vw, 110px);
-    line-height: 0.94;
-    letter-spacing: -0.045em;
-    margin-bottom: 28px;
-    opacity: 0; animation: riseIn 1s .2s forwards;
-  }
-  .hero__title .accent {
-    color: var(--accent);
-    position: relative;
-    display: inline-block;
-  }
-  .hero__title .accent::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0; bottom: -6px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-    animation: sweep 3s ease-in-out infinite;
-  }
-  @keyframes sweep {
-    0%, 100% { transform: scaleX(0); transform-origin: left; }
-    50%      { transform: scaleX(1); transform-origin: left; }
-  }
-  .hero__title .mono {
-    display: block;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 0.32em;
-    font-weight: 400;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    margin-top: 20px;
-  }
-
-  @keyframes riseIn {
-    from { opacity: 0; transform: translateY(20px); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero h1 {
+    font-weight: 800;
+    font-size: clamp(42px, 6vw, 88px);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    margin-bottom: 30px;
+    opacity: 0; animation: fadeUp 1s .2s forwards;
+  }
+  .hero h1 .line { display: block; overflow: hidden; }
+  .hero h1 .line span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(110%);
+    animation: wordUp 1s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  .hero h1 .line:nth-child(1) span { animation-delay: .35s; }
+  .hero h1 .line:nth-child(2) span { animation-delay: .5s; }
+  .hero h1 .line:nth-child(3) span { animation-delay: .65s; }
+  @keyframes wordUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(120deg, var(--lime), var(--cyan));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+  .hero h1 .dot {
+    display: inline-block;
+    width: 0.14em; height: 0.14em;
+    border-radius: 50%;
+    background: var(--pink);
+    vertical-align: middle;
+    margin: 0 0.1em;
+    box-shadow: 0 0 20px var(--pink);
   }
 
   .hero__sub {
     font-size: 17px;
-    color: var(--text-dim);
-    max-width: 520px;
-    margin-bottom: 42px;
     line-height: 1.65;
-    opacity: 0; animation: riseIn 1s .4s forwards;
+    color: var(--text-2);
+    max-width: 480px;
+    margin-bottom: 42px;
+    opacity: 0; animation: fadeUp 1s .9s forwards;
   }
-  .hero__sub b { color: var(--text); font-weight: 500; }
+  .hero__sub b { color: var(--text); font-weight: 600; }
 
   .hero__actions {
-    display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
-    margin-bottom: 42px;
-    opacity: 0; animation: riseIn 1s .55s forwards;
+    display: flex; gap: 12px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 1s 1.05s forwards;
   }
 
-  .btn-hero {
-    display: inline-flex; align-items: center; gap: 12px;
-    padding: 16px 30px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--bg); text-decoration: none;
-    background: var(--accent);
-    border: 1px solid var(--accent);
+  /* Живой мокап-канвас */
+  .stage {
     position: relative;
-    overflow: hidden;
-    transition: background .25s, box-shadow .25s, transform .25s;
-    box-shadow: 0 0 30px rgba(255,107,26,0.35);
-  }
-  .btn-hero::before {
-    content: ''; position: absolute;
-    top: 0; left: -100%; width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-    transition: left .6s;
-  }
-  .btn-hero:hover::before { left: 100%; }
-  .btn-hero:hover {
-    background: var(--accent-hot);
-    border-color: var(--accent-hot);
-    box-shadow: 0 0 40px rgba(255,46,46,0.7);
-    transform: translateY(-2px);
-  }
-  .btn-hero svg { width: 16px; height: 16px; }
-
-  .btn-line {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 16px 26px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--text); text-decoration: none;
-    background: transparent;
-    border: 1px solid var(--line);
-    transition: border-color .25s, color .25s, background .25s;
-  }
-  .btn-line:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(255,107,26,0.06);
-  }
-
-  .hero__stats {
-    display: flex; gap: 42px; flex-wrap: wrap;
-    padding-top: 30px;
-    border-top: 1px solid var(--line);
-    opacity: 0; animation: riseIn 1s .7s forwards;
-  }
-  .hero__stat {
-    font-family: 'JetBrains Mono', Consolas, monospace;
-  }
-  .hero__stat .v {
-    font-size: 22px; font-weight: 600;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-  }
-  .hero__stat .k {
-    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--text-mute); margin-top: 4px;
-  }
-
-  /* ==================== Радар ==================== */
-  .radar-wrap {
-    position: relative;
-    display: flex; justify-content: center; align-items: center;
-    opacity: 0; animation: riseIn 1.2s .5s forwards;
-  }
-
-  .radar {
+    aspect-ratio: 1;
     width: 100%;
-    max-width: 460px;
-    aspect-ratio: 1 / 1;
+    max-width: 520px;
+    margin-left: auto;
+    opacity: 0; animation: fadeUp 1.2s .5s forwards;
+  }
+  @media (max-width: 1000px) {
+    .stage { margin: 0 auto; }
+  }
+
+  .stage__frame {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #101014 0%, #08080a 70%);
+    box-shadow:
+      0 40px 100px -20px rgba(0,0,0,0.9),
+      0 0 0 1px rgba(255,255,255,0.02),
+      0 0 80px -20px rgba(179,255,26,0.2);
+  }
+  .stage__frame::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(179,255,26,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(179,255,26,0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(circle at center, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(circle at center, #000 20%, transparent 75%);
+    pointer-events: none;
+  }
+  .stage__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Corner brackets */
+  .stage__frame::after {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border: 1px solid transparent;
+    border-image: none;
+    pointer-events: none;
+  }
+  .stage__corner {
+    position: absolute;
+    width: 18px; height: 18px;
+    border: 2px solid var(--lime);
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  .stage__corner.tl { top: 14px; left: 14px; border-right: none; border-bottom: none; }
+  .stage__corner.tr { top: 14px; right: 14px; border-left: none; border-bottom: none; }
+  .stage__corner.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
+  .stage__corner.br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
+
+  /* Overlay UI on stage */
+  .stage__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .stage__hud {
+    position: absolute;
+    padding: 6px 10px;
+    background: rgba(8,8,10,0.6);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .stage__hud.tl { top: 24px; left: 24px; }
+  .stage__hud.tr { top: 24px; right: 24px; color: var(--lime); }
+  .stage__hud.bl { bottom: 24px; left: 24px; }
+  .stage__hud.br { bottom: 24px; right: 24px; color: var(--pink); }
+  .stage__hud i {
+    width: 6px; height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--lime);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  /* Effect switcher под stage */
+  .switcher {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 100px;
+    background: rgba(13,13,17,0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    z-index: 5;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .switcher::-webkit-scrollbar { display: none; }
+  .switcher button {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: none;
+    transition: all .2s;
+  }
+  .switcher button:hover {
+    border-color: var(--lime);
+    color: var(--lime);
+  }
+  .switcher button.active {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--bg);
+    box-shadow: 0 0 14px rgba(179,255,26,0.6);
+  }
+
+  /* Hero footer с цифрами */
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-top: 40px;
+    opacity: 0; animation: fadeUp 1s 1.2s forwards;
+  }
+  @media (max-width: 800px) { .hero__stats { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat {
+    padding: 26px 24px;
+    border-right: 1px solid var(--border);
     position: relative;
   }
-
-  .radar__grid {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at center,
-        transparent 0%, transparent 18%,
-        rgba(255,107,26,0.06) 18.5%, transparent 19%,
-        transparent 38%,
-        rgba(255,107,26,0.06) 38.5%, transparent 39%,
-        transparent 58%,
-        rgba(255,107,26,0.06) 58.5%, transparent 59%,
-        transparent 78%,
-        rgba(255,107,26,0.06) 78.5%, transparent 79%);
-    border: 1px solid var(--line-hot);
-    box-shadow: inset 0 0 80px rgba(255,107,26,0.08), 0 0 60px rgba(255,107,26,0.15);
+  .stat:last-child { border-right: none; }
+  @media (max-width: 800px) {
+    .stat:nth-child(2) { border-right: none; }
+    .stat:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
   }
 
-  .radar__cross {
-    position: absolute; inset: 0;
-    background:
-      linear-gradient(0deg, transparent calc(50% - 0.5px), rgba(255,107,26,0.15) 50%, transparent calc(50% + 0.5px)),
-      linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(255,107,26,0.15) 50%, transparent calc(50% + 0.5px));
-    border-radius: 50%;
+  .stat__v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    display: flex; align-items: baseline; gap: 4px;
+  }
+  .stat__v em {
+    font-style: normal;
+    color: var(--lime);
+    font-size: 0.6em;
+    font-weight: 500;
+  }
+  .stat__k {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-top: 6px;
+  }
+  .stat:nth-child(2) .stat__v em { color: var(--pink); }
+  .stat:nth-child(3) .stat__v em { color: var(--cyan); }
+  .stat:nth-child(4) .stat__v em { color: var(--yellow); }
+
+  /* ==================== Section ==================== */
+  section { padding: 120px 0; position: relative; }
+
+  .sec-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 50px;
+    align-items: start;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 60px;
+  }
+  @media (max-width: 800px) {
+    .sec-head { grid-template-columns: 1fr; gap: 20px; }
   }
 
-  .radar__sweep {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg at 50% 50%,
-      rgba(255,107,26,0) 0deg,
-      rgba(255,107,26,0.28) 45deg,
-      rgba(255,107,26,0.5) 90deg,
-      rgba(255,107,26,0) 91deg,
-      transparent 360deg);
-    animation: sweepRot 4s linear infinite;
-    mix-blend-mode: screen;
+  .sec-head__num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--lime);
+    letter-spacing: 0.15em;
+    padding-top: 8px;
+    display: flex; align-items: center; gap: 10px;
   }
-  @keyframes sweepRot {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-
-  .radar__dot {
-    position: absolute;
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 12px var(--accent);
-    animation: dotBlink 2s ease-in-out infinite;
-  }
-  .radar__dot::after {
+  .sec-head__num::before {
     content: '';
-    position: absolute; inset: -8px;
-    border: 1px solid var(--accent);
-    border-radius: 50%;
-    opacity: 0;
-    animation: dotRing 2s ease-out infinite;
-  }
-  @keyframes dotBlink {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0.4; }
-  }
-  @keyframes dotRing {
-    0%   { transform: scale(0.4); opacity: 0.8; }
-    100% { transform: scale(1.6); opacity: 0; }
+    width: 24px; height: 1px;
+    background: var(--lime);
   }
 
-  .radar__dot.hot {
-    background: var(--accent-hot);
-    box-shadow: 0 0 14px var(--accent-hot);
-  }
-  .radar__dot.hot::after { border-color: var(--accent-hot); }
-
-  .radar__center {
-    position: absolute; left: 50%; top: 50%;
-    width: 14px; height: 14px;
-    transform: translate(-50%, -50%);
-    background: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 22px var(--accent);
-  }
-  .radar__center::before {
-    content: '';
-    position: absolute; inset: -8px;
-    border: 2px solid var(--accent);
-    border-radius: 50%;
-    opacity: 0.5;
-  }
-
-  .radar__label {
-    position: absolute;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--accent);
-  }
-  .radar__label.tl { top: 14px; left: 14px; }
-  .radar__label.tr { top: 14px; right: 14px; }
-  .radar__label.bl { bottom: 14px; left: 14px; }
-  .radar__label.br { bottom: 14px; right: 14px; color: var(--accent-hot); }
-
-  /* ==================== Секции ==================== */
-  section { padding: 110px 0; position: relative; z-index: 2; }
-
-  .sec-head { margin-bottom: 60px; }
-  .sec-head__tag {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 20px;
-  }
-  .sec-head__tag::before {
-    content: ''; width: 8px; height: 8px;
-    background: var(--accent); box-shadow: 0 0 8px var(--accent);
-  }
   .sec-head h2 {
     font-weight: 800;
-    font-size: clamp(32px, 4.6vw, 60px);
-    line-height: 1.05; letter-spacing: -0.03em;
-    max-width: 780px;
+    font-size: clamp(32px, 4.4vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    max-width: 900px;
+    margin-bottom: 20px;
   }
-  .sec-head h2 em { font-style: normal; color: var(--accent); }
+  .sec-head h2 em {
+    font-style: normal;
+    color: var(--lime);
+  }
   .sec-head p {
+    font-size: 16.5px;
+    color: var(--text-2);
     max-width: 620px;
-    margin-top: 22px;
-    color: var(--text-dim); font-size: 16.5px; line-height: 1.7;
+    line-height: 1.65;
   }
 
-  /* ==================== Карточки эффектов ==================== */
+  /* ==================== Effects grid ==================== */
   .fx-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
   }
 
   .fx {
     position: relative;
-    padding: 26px 24px 28px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    cursor: none;
-    transition: border-color .35s, background .35s, transform .35s;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0;
     overflow: hidden;
-    min-height: 148px;
+    transition: border-color .3s, transform .3s, background .3s;
+    cursor: none;
     display: flex; flex-direction: column;
   }
   .fx:hover {
-    border-color: var(--accent);
-    background: var(--panel-2);
-    transform: translateY(-3px);
+    border-color: rgba(179,255,26,0.35);
+    transform: translateY(-4px);
+    background: var(--surface-2);
   }
 
-  /* Уголки прицела */
-  .fx::before,
-  .fx::after {
-    content: ''; position: absolute;
-    width: 14px; height: 14px;
-    border: 2px solid var(--accent);
-    opacity: 0;
-    transition: opacity .3s, transform .3s;
+  .fx__canvas {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: radial-gradient(circle at center, #0e0e13 0%, #08080a 100%);
+    border-bottom: 1px solid var(--border);
+    display: block;
   }
-  .fx::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
-  .fx::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
-  .fx:hover::before,
-  .fx:hover::after { opacity: 1; }
-  .fx:hover::before { transform: translate(-3px, -3px); }
-  .fx:hover::after  { transform: translate(3px, 3px); }
 
-  /* Пинг-индикатор */
-  .fx__ping {
+  .fx__canvas canvas {
     position: absolute;
-    top: 14px; right: 14px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    color: var(--text-mute);
-    display: flex; align-items: center; gap: 6px;
+    inset: 0;
+    width: 100%; height: 100%;
+    display: block;
   }
-  .fx__ping::before {
-    content: ''; width: 5px; height: 5px;
-    background: var(--ok); border-radius: 50%;
-    box-shadow: 0 0 6px var(--ok);
+
+  .fx__canvas::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(179,255,26,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(179,255,26,0.04) 1px, transparent 1px);
+    background-size: 20px 20px;
+    mask-image: radial-gradient(circle at center, #000 30%, transparent 90%);
+    -webkit-mask-image: radial-gradient(circle at center, #000 30%, transparent 90%);
+    pointer-events: none;
   }
-  .fx:hover .fx__ping { color: var(--accent); }
+
+  .fx__meta {
+    padding: 18px 20px 20px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
 
   .fx__num {
-    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    letter-spacing: 0.16em;
-    color: var(--accent);
-    margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .fx__num::before {
-    content: ''; width: 18px; height: 1px;
-    background: var(--accent);
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+    padding-top: 2px;
+    flex-shrink: 0;
   }
 
+  .fx__body { min-width: 0; }
+
   .fx__name {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.01em;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+    transition: color .25s;
   }
+  .fx:hover .fx__name { color: var(--lime); }
 
   .fx__desc {
     font-size: 13px;
-    color: var(--text-dim);
-    line-height: 1.6;
-    margin-top: auto;
+    color: var(--text-2);
+    line-height: 1.5;
   }
 
-  /* ==================== Терминал ==================== */
-  .terminal {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    position: relative;
-    overflow: hidden;
-  }
-  .terminal::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
-
-  .terminal__head {
-    display: flex; align-items: center; gap: 10px;
-    padding: 14px 20px;
-    background: rgba(255,255,255,0.02);
-    border-bottom: 1px solid var(--line);
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 11px;
-    color: var(--text-mute);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .terminal__head i {
-    width: 10px; height: 10px;
-    border: 1px solid var(--text-mute);
-  }
-  .terminal__head .grow { flex: 1; }
-  .terminal__head .live {
-    display: inline-flex; align-items: center; gap: 6px;
-    color: var(--accent);
-  }
-  .terminal__head .live::before {
-    content: ''; width: 6px; height: 6px;
-    background: var(--accent); border-radius: 50%;
-    box-shadow: 0 0 8px var(--accent);
-    animation: blink 1.4s ease-in-out infinite;
-  }
-
-  .terminal__body {
-    padding: 24px 26px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 13px;
-    line-height: 1.9;
-    color: var(--text);
-  }
-  .terminal__body .p { color: var(--accent); margin-right: 10px; }
-  .terminal__body .c { color: var(--text-dim); }
-  .terminal__body .m { color: var(--text-mute); }
-  .terminal__body .ok { color: var(--ok); }
-  .terminal__body .warn { color: var(--accent-hot); }
-  .terminal__body .bl { display: block; height: 8px; }
-
-  .caret {
-    display: inline-block;
-    width: 8px; height: 14px;
-    background: var(--accent);
-    vertical-align: middle;
-    margin-left: 4px;
-    animation: blink 1s steps(2) infinite;
-  }
-
-  /* ==================== Двухколоночная секция ==================== */
+  /* ==================== Feature split ==================== */
   .split {
     display: grid;
-    grid-template-columns: 1fr 1.1fr;
+    grid-template-columns: 1fr 1.2fr;
     gap: 60px;
     align-items: start;
   }
   @media (max-width: 900px) { .split { grid-template-columns: 1fr; gap: 40px; } }
 
-  /* ==================== Характеристики ==================== */
-  .stats {
+  .copy p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text-2);
+    margin-bottom: 20px;
+  }
+  .copy p b { color: var(--text); font-weight: 600; }
+  .copy p em {
+    font-style: normal;
+    color: var(--lime);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+  }
+
+  /* Terminal card */
+  .term {
+    border-radius: 14px;
+    background: #060608;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,0.7);
+  }
+  .term__head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.1em;
+  }
+  .term__dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .term__dot.r { background: #ff5f57; }
+  .term__dot.y { background: #febc2e; }
+  .term__dot.g { background: #28c840; }
+  .term__head span:last-child {
+    margin-left: auto;
+    color: var(--lime);
+  }
+
+  .term__body {
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .term__body .p { color: var(--lime); margin-right: 8px; }
+  .term__body .c { color: var(--text-2); }
+  .term__body .k { color: var(--cyan); }
+  .term__body .s { color: var(--yellow); }
+  .term__body .ok { color: var(--lime); }
+  .term__body .warn { color: var(--pink); }
+  .term__body .bl { display: block; height: 8px; }
+
+  .term__caret {
+    display: inline-block;
+    width: 7px; height: 14px;
+    background: var(--lime);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: caret 1s steps(2) infinite;
+  }
+  @keyframes caret {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ==================== Metrics ==================== */
+  .metrics {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
-  @media (max-width: 760px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .stats .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
-    .stats .stat:nth-child(2) { border-right: none; }
-  }
+  @media (max-width: 800px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
 
-  .stat {
+  .metric {
     padding: 50px 30px;
-    border-right: 1px solid var(--line);
+    border-right: 1px solid var(--border);
     position: relative;
   }
-  .stat:last-child { border-right: none; }
-  @media (max-width: 760px) { .stat:last-child { border-right: none; } }
+  .metric:last-child { border-right: none; }
+  @media (max-width: 800px) {
+    .metric:nth-child(2) { border-right: none; }
+    .metric:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+  }
 
-  .stat__v {
-    font-family: 'Inter', sans-serif;
-    font-weight: 800;
-    font-size: clamp(42px, 5vw, 68px);
+  .metric__v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(38px, 4.4vw, 58px);
+    font-weight: 700;
     line-height: 1;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
     color: var(--text);
-    display: flex; align-items: baseline; gap: 6px;
+    margin-bottom: 12px;
+    display: flex; align-items: baseline; gap: 4px;
   }
-  .stat__v em {
+  .metric__v em {
     font-style: normal;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 0.32em;
-    color: var(--accent);
-    letter-spacing: 0.05em;
+    font-size: 0.4em;
+    color: var(--lime);
+    font-weight: 500;
   }
-  .stat__k {
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 10.5px;
+  .metric:nth-child(2) .metric__v em { color: var(--pink); }
+  .metric:nth-child(3) .metric__v em { color: var(--cyan); }
+  .metric:nth-child(4) .metric__v em { color: var(--yellow); }
+
+  .metric__k {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--text-mute);
-    margin-top: 10px;
+    color: var(--text-3);
   }
-  .stat__bar {
-    height: 2px;
-    margin-top: 18px;
-    background: var(--line);
-    position: relative;
+
+  /* ==================== Install steps ==================== */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 16px;
     overflow: hidden;
   }
-  .stat__bar::after {
-    content: '';
-    position: absolute; top: 0; left: 0; bottom: 0;
-    width: var(--w, 60%);
-    background: linear-gradient(90deg, var(--accent), var(--accent-hot));
-    box-shadow: 0 0 8px var(--accent);
+  @media (max-width: 1000px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px)  { .steps { grid-template-columns: 1fr; } }
+
+  .step {
+    padding: 30px 24px;
+    border-right: 1px solid var(--border);
+    position: relative;
+    transition: background .3s;
+  }
+  .step:last-child { border-right: none; }
+  .step:hover { background: var(--surface); }
+  @media (max-width: 1000px) {
+    .step:nth-child(2n) { border-right: none; }
+    .step:nth-child(-n+3) { border-bottom: 1px solid var(--border); }
+  }
+  @media (max-width: 500px) {
+    .step { border-right: none; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+  }
+
+  .step__num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--lime);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+  .step__title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .step__desc {
+    font-size: 13.5px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .step__desc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: rgba(179,255,26,0.08);
+    color: var(--lime);
+    padding: 1px 6px;
+    border-radius: 4px;
   }
 
   /* ==================== CTA ==================== */
   .cta {
     position: relative;
     padding: 90px 60px;
-    background: linear-gradient(180deg, var(--panel), var(--bg));
-    border: 1px solid var(--line);
+    border-radius: 24px;
     overflow: hidden;
+    background:
+      radial-gradient(ellipse at top left, rgba(179,255,26,0.16), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(61,213,255,0.14), transparent 50%),
+      linear-gradient(180deg, var(--surface), var(--bg-2));
+    border: 1px solid var(--border-2);
     text-align: center;
   }
   .cta::before {
     content: '';
-    position: absolute; inset: -50%;
-    background: conic-gradient(from 0deg, transparent 0deg, rgba(255,107,26,0.16) 60deg, transparent 120deg);
-    animation: ctaRot 10s linear infinite;
+    position: absolute;
+    inset: -50%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(179,255,26,0.1) 60deg, transparent 120deg);
+    animation: rotate 12s linear infinite;
     pointer-events: none;
   }
-  @keyframes ctaRot { to { transform: rotate(360deg); } }
-
+  @keyframes rotate { to { transform: rotate(360deg); } }
   .cta > * { position: relative; }
 
   .cta__tag {
-    display: inline-flex; align-items: center; gap: 10px;
+    display: inline-flex; align-items: center; gap: 8px;
     padding: 6px 14px;
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase;
-    color: var(--accent);
-    border: 1px solid var(--line-hot);
-    margin-bottom: 32px;
+    border-radius: 100px;
+    background: rgba(179,255,26,0.1);
+    border: 1px solid rgba(179,255,26,0.3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--lime);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 30px;
   }
   .cta h2 {
     font-weight: 800;
-    font-size: clamp(34px, 5vw, 68px);
-    line-height: 1.02; letter-spacing: -0.035em;
-    margin-bottom: 22px;
+    font-size: clamp(36px, 5.4vw, 72px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin-bottom: 24px;
   }
-  .cta h2 em { font-style: normal; color: var(--accent); }
+  .cta h2 em {
+    font-style: normal;
+    color: var(--lime);
+  }
   .cta p {
-    max-width: 520px; margin: 0 auto 42px;
-    color: var(--text-dim); font-size: 16.5px;
+    font-size: 17px;
+    color: var(--text-2);
+    max-width: 540px;
+    margin: 0 auto 42px;
   }
   .cta__actions {
-    display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
   }
 
-  /* ==================== Футер ==================== */
+  /* ==================== Footer ==================== */
   footer {
-    padding: 44px 0;
-    border-top: 1px solid var(--line);
-    font-family: 'JetBrains Mono', Consolas, monospace;
-    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--text-mute);
-    position: relative; z-index: 2;
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-3);
+    position: relative;
+    z-index: 2;
   }
   .foot {
     display: flex; justify-content: space-between;
     gap: 20px; flex-wrap: wrap; align-items: center;
   }
-  .foot a {
-    color: var(--text-dim); text-decoration: none;
-    transition: color .25s;
+  .foot__links { display: flex; gap: 24px; flex-wrap: wrap; }
+  .foot__links a {
+    color: var(--text-2); text-decoration: none;
+    transition: color .2s;
   }
-  .foot a:hover { color: var(--accent); }
-  .foot__links { display: flex; gap: 26px; flex-wrap: wrap; }
+  .foot__links a:hover { color: var(--lime); }
 
   /* ==================== Reveal ==================== */
   .reveal {
-    opacity: 0; transform: translateY(30px);
-    transition: opacity .9s cubic-bezier(.2,.7,.2,1),
-                transform .9s cubic-bezier(.2,.7,.2,1);
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .8s cubic-bezier(.2,.7,.2,1),
+                transform .8s cubic-bezier(.2,.7,.2,1);
   }
   .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* ==================== Keyboard hint ==================== */
+  .kb-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    padding: 10px 18px;
+    border-radius: 100px;
+    background: rgba(13,13,17,0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.05em;
+    display: flex; align-items: center; gap: 10px;
+    transition: opacity .3s, transform .3s;
+    pointer-events: none;
+  }
+  .kb-hint.hidden { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  .kb-hint kbd {
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text);
+    font-weight: 700;
+  }
+  @media (max-width: 700px) { .kb-hint { display: none; } }
 </style>
 </head>
 <body>
 
-<!-- Курсор -->
-<div class="cur-frame" id="frame">
-  <span class="tl"></span><span class="tr"></span>
-  <span class="bl"></span><span class="br"></span>
+<!-- ==================== Preloader ==================== -->
+<div class="boot" id="boot">
+  <div class="boot__inner">
+    <div class="boot__line">Loading axolotl-visuals<span>...</span></div>
+    <div class="boot__line">Mounting effects registry<span>ok</span></div>
+    <div class="boot__line">Initializing canvas engine<span>ok</span></div>
+    <div class="boot__line">Calibrating 20 target modules<span>ok</span></div>
+    <div class="boot__line ok">Ready<span>✓</span></div>
+    <div class="boot__bar"></div>
+  </div>
 </div>
-<div class="cur" id="cur"></div>
-<div class="cur-dot" id="dot"></div>
 
-<!-- Прогресс -->
-<div class="progress"><div class="progress__bar" id="progress"></div></div>
+<!-- Cursor -->
+<div class="reticle" id="reticle"></div>
+<div class="reticle-outer" id="reticle-outer"></div>
 
-<!-- Дождь -->
-<canvas id="rain"></canvas>
-
-<!-- ==================== NAV ==================== -->
+<!-- ==================== Nav ==================== -->
 <nav class="nav" id="nav">
-  <a href="#" class="logo">
-    <div class="logo__mark"><i></i></div>
+  <a href="#" class="brand">
+    <div class="brand__mark"></div>
     <span>Axolotl</span>
-    <span class="logo__suffix">/ visuals</span>
+    <span class="brand__suffix">/visuals</span>
   </a>
 
   <div class="nav__links">
-    <a href="#effects">Эффекты</a>
-    <a href="#how">Под капотом</a>
-    <a href="#install">Установка</a>
+    <a href="#effects">эффекты</a>
+    <a href="#how">механика</a>
+    <a href="#install">установка</a>
   </div>
 
-  <div class="nav__right">
-    <a class="btn-ghost" href="https://github.com/PythonExeCoder/axolotlvisuals" target="_blank" rel="noopener">
+  <div class="nav__actions">
+    <a class="btn btn--ghost btn--small" href="https://github.com/PythonExeCoder/axolotlvisuals" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/>
       </svg>
-      <span>GitHub</span>
+      GitHub
     </a>
-    <a class="btn-solid" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+    <a class="btn btn--primary btn--small" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="7 10 12 15 17 10"/>
         <line x1="12" y1="15" x2="12" y2="3"/>
       </svg>
-      .jar
+      Скачать
     </a>
   </div>
 </nav>
@@ -915,26 +1094,228 @@
 <!-- ==================== HERO ==================== -->
 <div class="wrap">
   <section class="hero">
-    <div>
-      <div class="hero__eyebrow">
-        <i></i>
-        Fabric 1.21.11 · 20 effects · v1.0
+    <div class="hero__head">
+      <div>
+        <div class="hero__eyebrow">
+          <i></i>
+          FABRIC 1.21.11 · LIVE DEMO · 20 EFFECTS
+        </div>
+
+        <h1>
+          <span class="line"><span>Цель</span></span>
+          <span class="line"><span>под&nbsp;<em>контролем</em><span class="dot"></span></span></span>
+          <span class="line"><span>в реальном времени.</span></span>
+        </h1>
+
+        <p class="hero__sub">
+          Мод для Minecraft, который рисует эффекты вокруг игрока под прицелом.
+          Открой меню клавишей <b>Ё</b> — выбери эффект — наведись.
+          Все 20 модулей работают прямо на этой странице — листай вниз.
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Скачать .jar
+          </a>
+          <a class="btn btn--ghost" href="#effects">
+            Список эффектов
+          </a>
+        </div>
       </div>
 
-      <h1 class="hero__title">
-        Прицел <span class="accent">захвата</span><br>
-        цели.
-        <span class="mono">target esp tactical suite</span>
-      </h1>
+      <div class="stage">
+        <div class="stage__frame">
+          <span class="stage__corner tl"></span>
+          <span class="stage__corner tr"></span>
+          <span class="stage__corner bl"></span>
+          <span class="stage__corner br"></span>
+          <canvas class="stage__canvas" id="hero-canvas"></canvas>
+          <div class="stage__overlay">
+            <div class="stage__hud tl"><i></i> <span id="hud-name">AURA</span></div>
+            <div class="stage__hud tr">LOCKED</div>
+            <div class="stage__hud bl">RANGE 32M</div>
+            <div class="stage__hud br">● 60 FPS</div>
+          </div>
+        </div>
+        <div class="switcher" id="switcher"><!-- генерируется JS --></div>
+      </div>
+    </div>
 
-      <p class="hero__sub">
-        Один <b>.jar</b> для Minecraft. Открываешь меню клавишей <b>Ё</b> — выбираешь
-        один из&nbsp;20&nbsp;эффектов — наводишь прицел на&nbsp;игрока. Всё остальное
-        делает мод.
-      </p>
+    <div class="hero__stats">
+      <div class="stat">
+        <div class="stat__v">20<em>fx</em></div>
+        <div class="stat__k">effects</div>
+      </div>
+      <div class="stat">
+        <div class="stat__v">&lt;1<em>%</em></div>
+        <div class="stat__k">fps drop</div>
+      </div>
+      <div class="stat">
+        <div class="stat__v">32<em>m</em></div>
+        <div class="stat__k">range</div>
+      </div>
+      <div class="stat">
+        <div class="stat__v">0<em>dep</em></div>
+        <div class="stat__k">dependencies</div>
+      </div>
+    </div>
+  </section>
+</div>
 
-      <div class="hero__actions">
-        <a class="btn-hero" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+<!-- ==================== EFFECTS ==================== -->
+<section id="effects" style="padding-top: 40px;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-head__num">01 / EFFECTS</div>
+      <div>
+        <h2>Двадцать <em>живых модулей</em> — все анимируются прямо сейчас.</h2>
+        <p>Каждый эффект — уникальная математика. Переключается одной клавишей в игре или кликом на этой странице.</p>
+      </div>
+    </div>
+
+    <div class="fx-grid" id="fx-grid"></div>
+  </div>
+</section>
+
+<!-- ==================== HOW ==================== -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-head__num">02 / MECHANICS</div>
+      <div>
+        <h2>Один луч. <em>Тридцать два метра.</em> Ноль лишних вычислений.</h2>
+        <p>Каждый игровой тик мод пускает луч от глаз игрока. Если луч нашёл цель — включается рендер выбранного эффекта.</p>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="copy reveal">
+        <p>
+          Никаких текстур, частиц, шейдеров. Только <b>линии в мировых координатах</b>, которые
+          рисуются поверх мира.
+        </p>
+        <p>
+          Если цели нет — рендер <em>не вызывается вовсе</em>. Ноль вычислений, ноль просадок FPS.
+        </p>
+        <p>
+          Эффекты отсекаются по дистанции и по FOV. Даже если ты смотришь в стену с 50 эффектами
+          в конфиге — нагрузка нулевая.
+        </p>
+      </div>
+
+      <div class="term reveal">
+        <div class="term__head">
+          <span class="term__dot r"></span>
+          <span class="term__dot y"></span>
+          <span class="term__dot g"></span>
+          <span>axolotl-visuals :: runtime</span>
+          <span>● live</span>
+        </div>
+        <div class="term__body">
+          <span class="p">$</span> <span class="c">java -jar axolotlvisuals-1.0.0.jar</span>
+          <span class="bl"></span>
+          <span class="k">[init]</span> <span class="c">client mod</span> <span class="ok">✓</span>
+          <span class="bl"></span>
+          <span class="k">[init]</span> <span class="c">keybinding</span> <span class="s">"Ё"</span> <span class="ok">✓</span>
+          <span class="bl"></span>
+          <span class="k">[init]</span> <span class="c">render hook</span> <span class="ok">✓</span>
+          <span class="bl"></span>
+          <span class="k">[init]</span> <span class="c">effects registry</span> <span class="s">[20/20]</span>
+          <span class="bl"></span>
+          <span class="ok">ready in 0.31s</span>
+          <span class="bl"></span>
+          <span class="k">[run]</span> <span class="c">fps impact</span> <span class="warn">&lt;1%</span>
+          <span class="bl"></span>
+          <span class="k">[run]</span> <span class="c">render ms</span> <span class="warn">0.02</span>
+          <span class="bl"></span>
+          <span class="k">[run]</span> <span class="c">targets</span> <span class="ok">1</span>
+          <span class="bl"></span>
+          <span class="p">›</span><span class="term__caret"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== METRICS ==================== -->
+<section style="padding: 0 0 100px;">
+  <div class="wrap">
+    <div class="metrics reveal">
+      <div class="metric">
+        <div class="metric__v">20<em>fx</em></div>
+        <div class="metric__k">эффектов</div>
+      </div>
+      <div class="metric">
+        <div class="metric__v">0.02<em>ms</em></div>
+        <div class="metric__k">на кадр</div>
+      </div>
+      <div class="metric">
+        <div class="metric__v">32<em>m</em></div>
+        <div class="metric__k">дистанция</div>
+      </div>
+      <div class="metric">
+        <div class="metric__v">0<em>dep</em></div>
+        <div class="metric__k">зависимостей</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== INSTALL ==================== -->
+<section id="install" style="padding: 0 0 100px;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-head__num">03 / INSTALL</div>
+      <div>
+        <h2>Пять шагов. <em>Тридцать секунд.</em></h2>
+        <p>Скачал — положил — запустил. Дальше мод делает всё сам.</p>
+      </div>
+    </div>
+
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step__num">01</div>
+        <div class="step__title">Открыть папку mods</div>
+        <div class="step__desc">Вставь в проводник: <code>%appdata%\.minecraft\mods</code></div>
+      </div>
+      <div class="step">
+        <div class="step__num">02</div>
+        <div class="step__title">Положить .jar</div>
+        <div class="step__desc">Скопируй <code>axolotlvisuals-1.0.0.jar</code> в папку.</div>
+      </div>
+      <div class="step">
+        <div class="step__num">03</div>
+        <div class="step__title">Добавить Fabric API</div>
+        <div class="step__desc">Скачай <code>fabric-api</code> для 1.21.11 и положи рядом.</div>
+      </div>
+      <div class="step">
+        <div class="step__num">04</div>
+        <div class="step__title">Запустить профиль</div>
+        <div class="step__desc">В лаунчере выбери <code>fabric-loader-1.21.11</code>.</div>
+      </div>
+      <div class="step">
+        <div class="step__num">05</div>
+        <div class="step__title">Нажать Ё</div>
+        <div class="step__desc">В игре открой меню клавишей <code>Ё</code> или <code>`</code>.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CTA ==================== -->
+<section style="padding: 0 0 100px;">
+  <div class="wrap">
+    <div class="cta reveal">
+      <div class="cta__tag">● ready to deploy</div>
+      <h2>Готов <em>взять цель</em>?</h2>
+      <p>Один файл. Двадцать стилей. Ноль зависимостей. Наводи прицел — мир вокруг цели оживает.</p>
+      <div class="cta__actions">
+        <a class="btn btn--primary" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
@@ -942,212 +1323,7 @@
           </svg>
           Скачать .jar
         </a>
-        <a class="btn-line" href="#effects">
-          Список эффектов
-        </a>
-      </div>
-
-      <div class="hero__stats">
-        <div class="hero__stat">
-          <div class="v">20</div>
-          <div class="k">effects</div>
-        </div>
-        <div class="hero__stat">
-          <div class="v">&lt;1%</div>
-          <div class="k">fps drop</div>
-        </div>
-        <div class="hero__stat">
-          <div class="v">32m</div>
-          <div class="k">range</div>
-        </div>
-        <div class="hero__stat">
-          <div class="v">Ё</div>
-          <div class="k">hotkey</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Радар -->
-    <div class="radar-wrap">
-      <div class="radar">
-        <div class="radar__grid"></div>
-        <div class="radar__cross"></div>
-        <div class="radar__sweep"></div>
-        <div class="radar__center"></div>
-
-        <span class="radar__label tl">scan</span>
-        <span class="radar__label tr">32 m</span>
-        <span class="radar__label bl">fabric 1.21.11</span>
-        <span class="radar__label br">● live</span>
-
-        <!-- Точки целей (генерируются JS) -->
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ==================== ЭФФЕКТЫ ==================== -->
-<section id="effects">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-head__tag">01 / Библиотека</div>
-      <h2>Двадцать <em>стилей захвата</em> — от строгих до космических.</h2>
-      <p>
-        Каждый эффект — отдельная геометрия, своя скорость анимации, свой ритм.
-        Переключаются мгновенно, из меню или с клавиши.
-      </p>
-    </div>
-
-    <div class="fx-grid" id="fx-grid"><!-- заполняется JS --></div>
-  </div>
-</section>
-
-<!-- ==================== ПОД КАПОТОМ ==================== -->
-<section id="how">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-head__tag">02 / Под капотом</div>
-      <h2>Чистая математика, <em>нулевая нагрузка</em>.</h2>
-    </div>
-
-    <div class="split">
-      <div class="reveal">
-        <p style="color:var(--text-dim); font-size:16.5px; line-height:1.75; margin-bottom:24px;">
-          Каждый тик мод пускает луч от&nbsp;глаз игрока на&nbsp;<b style="color:var(--text)">32&nbsp;блока</b>.
-          Если луч пересекает хитбокс другого игрока — включается рендер.
-        </p>
-        <p style="color:var(--text-dim); font-size:16.5px; line-height:1.75; margin-bottom:24px;">
-          Сами эффекты — <b style="color:var(--text)">чистая геометрия</b> поверх мира.
-          Никаких текстур, частиц и&nbsp;тяжёлых шейдеров. Только линии в&nbsp;мировых координатах.
-        </p>
-        <p style="color:var(--text-dim); font-size:16.5px; line-height:1.75;">
-          Всякий раз, когда луч не&nbsp;находит цель&nbsp;— рендер <b style="color:var(--accent)">не&nbsp;вызывается вовсе</b>.
-          Ноль лишних вычислений, ноль нагрузки.
-        </p>
-      </div>
-
-      <div class="terminal reveal">
-        <div class="terminal__head">
-          <i></i>
-          <span>axolotl-visuals</span>
-          <span class="grow"></span>
-          <span class="live">running</span>
-        </div>
-        <div class="terminal__body">
-          <span class="p">$</span><span class="c">java -jar axolotlvisuals-1.0.0.jar</span>
-          <span class="bl"></span>
-          <span class="m">// initializing client mod</span>
-          <span class="bl"></span>
-          <span class="p">&gt;</span><span class="c">register keybinding</span><span class="m"> "Ё"</span>
-          <span class="bl"></span>
-          <span class="p">&gt;</span><span class="c">register world render hook</span>
-          <span class="bl"></span>
-          <span class="p">&gt;</span><span class="c">load 20 effects</span>
-          <span class="bl"></span>
-          <span class="ok">✓ ready in 0.31s</span>
-          <span class="bl"></span>
-          <span class="m">// runtime status</span>
-          <span class="bl"></span>
-          <span class="p">&gt;</span><span class="c">fps impact</span>
-          <span class="warn"> &lt;1%</span>
-          <span class="bl"></span>
-          <span class="p">&gt;</span><span class="c">avg. render ms</span>
-          <span class="warn"> 0.02</span>
-          <span class="bl"></span>
-          <span class="p">&gt;</span><span class="c">targets tracked</span>
-          <span class="ok"> 1</span>
-          <span class="bl"></span>
-          <span class="p">&gt;</span><span class="caret"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ==================== ХАРАКТЕРИСТИКИ ==================== -->
-<section style="padding: 0 0 110px;">
-  <div class="wrap">
-    <div class="stats reveal">
-      <div class="stat">
-        <div class="stat__v">20<em>fx</em></div>
-        <div class="stat__k">эффектов</div>
-        <div class="stat__bar" style="--w: 100%;"></div>
-      </div>
-      <div class="stat">
-        <div class="stat__v">0.02<em>ms</em></div>
-        <div class="stat__k">на кадр</div>
-        <div class="stat__bar" style="--w: 8%;"></div>
-      </div>
-      <div class="stat">
-        <div class="stat__v">32<em>m</em></div>
-        <div class="stat__k">дистанция</div>
-        <div class="stat__bar" style="--w: 65%;"></div>
-      </div>
-      <div class="stat">
-        <div class="stat__v">0<em>dep</em></div>
-        <div class="stat__k">зависимостей</div>
-        <div class="stat__bar" style="--w: 0%;"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ==================== УСТАНОВКА ==================== -->
-<section id="install">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-head__tag">03 / Установка</div>
-      <h2>Тридцать секунд до <em>первого захвата</em>.</h2>
-      <p>
-        Скачай jar и положи в папку mods рядом с Fabric API. Запусти игру под профилем
-        Fabric 1.21.11 — всё.
-      </p>
-    </div>
-
-    <div class="terminal reveal">
-      <div class="terminal__head">
-        <i></i>
-        <span>windows · powershell</span>
-        <span class="grow"></span>
-        <span class="m">step by step</span>
-      </div>
-      <div class="terminal__body">
-        <span class="p">1.</span><span class="c">explorer %appdata%\.minecraft\mods</span>
-        <span class="bl"></span>
-        <span class="p">2.</span><span class="c">скопировать</span><span class="m"> axolotlvisuals-1.0.0.jar</span>
-        <span class="bl"></span>
-        <span class="p">3.</span><span class="c">скопировать</span><span class="m"> fabric-api-0.141.6+1.21.11.jar</span>
-        <span class="bl"></span>
-        <span class="p">4.</span><span class="c">запустить Minecraft → профиль Fabric 1.21.11</span>
-        <span class="bl"></span>
-        <span class="p">5.</span><span class="c">зайти в мир → нажать</span><span class="ok"> Ё</span>
-        <span class="bl"></span>
-        <span class="ok">✓ готово. Меню открыто.</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ==================== CTA ==================== -->
-<section style="padding-top: 0;">
-  <div class="wrap">
-    <div class="cta reveal">
-      <div class="cta__tag">● ready to deploy</div>
-      <h2>Готов <em>взять цель</em>?</h2>
-      <p>
-        Один файл, ноль зависимостей, 20&nbsp;стилей. Наводи прицел — и&nbsp;мир вокруг
-        цели оживает.
-      </p>
-      <div class="cta__actions">
-        <a class="btn-hero" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Скачать axolotlvisuals-1.0.0.jar
-        </a>
-        <a class="btn-line" href="https://github.com/PythonExeCoder/axolotlvisuals/releases" target="_blank" rel="noopener">
+        <a class="btn btn--ghost" href="https://github.com/PythonExeCoder/axolotlvisuals/releases" target="_blank" rel="noopener">
           Все релизы
         </a>
       </div>
@@ -1159,200 +1335,772 @@
 <footer>
   <div class="wrap">
     <div class="foot">
-      <span>© 2026 Axolotl Visuals · fabric 1.21.11 · java 21</span>
+      <span>© 2026 Axolotl Visuals · Fabric 1.21.11 · Java 21 · MIT</span>
       <div class="foot__links">
-        <a href="#effects">Эффекты</a>
-        <a href="#install">Установка</a>
+        <a href="#effects">эффекты</a>
+        <a href="#install">установка</a>
         <a href="https://github.com/PythonExeCoder/axolotlvisuals" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://github.com/PythonExeCoder/axolotlvisuals/issues" target="_blank" rel="noopener">Обратная связь</a>
+        <a href="https://github.com/PythonExeCoder/axolotlvisuals/issues" target="_blank" rel="noopener">Issues</a>
       </div>
     </div>
   </div>
 </footer>
 
-<script>
-  /* ==================== Курсор ==================== */
-  const cur   = document.getElementById('cur');
-  const frame = document.getElementById('frame');
-  const dot   = document.getElementById('dot');
+<!-- Keyboard hint -->
+<div class="kb-hint" id="kb-hint">
+  Нажми <kbd>←</kbd> <kbd>→</kbd> чтобы переключить эффект
+</div>
 
-  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-  let fx = mx, fy = my;
-  let dx = mx, dy = my;
+<script>
+  /* ================================================================
+     BOOT PRELOADER
+     ================================================================ */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('boot').classList.add('done');
+    }, 1500);
+  });
+
+  /* ================================================================
+     CUSTOM CURSOR
+     ================================================================ */
+  const reticle = document.getElementById('reticle');
+  const reticleOuter = document.getElementById('reticle-outer');
+  let mx = innerWidth / 2, my = innerHeight / 2;
+  let rx = mx, ry = my;
 
   window.addEventListener('mousemove', (e) => {
     mx = e.clientX; my = e.clientY;
-    cur.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    reticle.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
   });
 
-  function loop() {
-    fx += (mx - fx) * 0.16;
-    fy += (my - fy) * 0.16;
-    frame.style.transform = `translate(${fx}px, ${fy}px) translate(-50%, -50%)`;
-
-    dx += (mx - dx) * 0.35;
-    dy += (my - dy) * 0.35;
-    dot.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
-
-    requestAnimationFrame(loop);
+  function cursorLoop() {
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    reticleOuter.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    requestAnimationFrame(cursorLoop);
   }
-  loop();
+  cursorLoop();
 
-  // Hover — frame превращается в прицел
-  document.querySelectorAll('a, button, .fx').forEach(el => {
-    el.addEventListener('mouseenter', () => frame.classList.add('lock'));
-    el.addEventListener('mouseleave', () => frame.classList.remove('lock'));
+  document.querySelectorAll('a, button, .fx, .stat, .step, .metric').forEach(el => {
+    el.addEventListener('mouseenter', () => reticleOuter.classList.add('lock'));
+    el.addEventListener('mouseleave', () => reticleOuter.classList.remove('lock'));
   });
+  window.addEventListener('mousedown', () => reticleOuter.classList.add('click'));
+  window.addEventListener('mouseup',   () => reticleOuter.classList.remove('click'));
 
-  window.addEventListener('mousedown', () => frame.classList.add('click'));
-  window.addEventListener('mouseup',   () => frame.classList.remove('click'));
+  /* ================================================================
+     EFFECTS ENGINE — все 20 эффектов рисуются на canvas
+     ================================================================ */
 
-  /* ==================== Дождь ==================== */
-  const canvas = document.getElementById('rain');
-  const ctx = canvas.getContext('2d');
-  let raindrops = [];
+  const EFFECTS = [
+    { name: 'AURA',       color: '#b3ff1a', desc: 'Двойное пульсирующее кольцо с вертикальной волной.' },
+    { name: 'CRYSTALS',   color: '#3dd5ff', desc: 'Восемь парящих октаэдров вращаются вокруг цели.' },
+    { name: 'HELIX',      color: '#a78bfa', desc: 'Двойная спираль с перекладинами — как ДНК.' },
+    { name: 'SHOCKWAVE',  color: '#ffd53d', desc: 'Расходящиеся волны с эффектом затухания.' },
+    { name: 'COMPASS',    color: '#ff3d8b', desc: 'Четыре вращающихся указателя со стрелками.' },
+    { name: 'INFERNO',    color: '#ff9500', desc: 'Столб огня с искрами, реагирующими на время.' },
+    { name: 'GLACIER',    color: '#7dd3fc', desc: 'Ледяные пирамиды разной высоты вокруг.' },
+    { name: 'THUNDER',    color: '#fef08a', desc: 'Случайные ветвящиеся молнии с ореолом.' },
+    { name: 'BLACKHOLE',  color: '#a78bfa', desc: 'Пять спиралей, стягивающихся к центру.' },
+    { name: 'PULSE',      color: '#b3ff1a', desc: 'Концентрические волны, бегущие от центра.' },
+    { name: 'RETICLE',    color: '#ff3d8b', desc: 'Снайперский прицел с вращающимся кольцом.' },
+    { name: 'HOLOGRID',   color: '#3dd5ff', desc: 'Трёхмерная сетка в четырёх слоях высоты.' },
+    { name: 'GLITCH',     color: '#ff3d8b', desc: 'Квадраты-помехи, появляющиеся вразнобой.' },
+    { name: 'NOVA',       color: '#ffd53d', desc: 'Взрыв звезды с двенадцатью шипами.' },
+    { name: 'PLANETS',    color: '#a78bfa', desc: 'Планеты на орбитах разных радиусов.' },
+    { name: 'ASCENSION',  color: '#b3ff1a', desc: 'Восходящие стрелки, тающие к верху.' },
+    { name: 'METEOR',     color: '#ff9500', desc: 'Метеоры с хвостом, падающие со всех сторон.' },
+    { name: 'GYRO',       color: '#3dd5ff', desc: 'Три вращающихся кольца в разных плоскостях.' },
+    { name: 'MARKER',     color: '#ff3d8b', desc: 'Парящий маркер с пульсирующим кольцом.' },
+    { name: 'SPECTRUM',   color: '#b3ff1a', desc: 'Радужный вихрь — каждый луч в своём цвете.' }
+  ];
 
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const count = Math.floor((canvas.width * canvas.height) / 12000);
-    raindrops = [];
-    for (let i = 0; i < count; i++) {
-      raindrops.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        len: 12 + Math.random() * 22,
-        speed: 4 + Math.random() * 6,
-        alpha: 0.15 + Math.random() * 0.5,
-        hot: Math.random() > 0.92
-      });
+  /* --- Хелперы рисования --- */
+  function setGlow(ctx, color, blur = 6) {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur;
+  }
+  function clearGlow(ctx) {
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = 'transparent';
+  }
+
+  /* --- Рисуем мишень (simple humanoid) --- */
+  function drawTarget(ctx, cx, cy, scale) {
+    // scale = высота фигуры в пикселях
+    const h = scale;
+    const w = h * 0.42;
+    const headSize = h * 0.28;
+
+    ctx.save();
+    ctx.translate(cx, cy - h / 2);
+
+    // Glow
+    ctx.shadowColor = 'rgba(179,255,26,0.4)';
+    ctx.shadowBlur = 20;
+
+    // Body
+    ctx.fillStyle = '#2a2a34';
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+
+    // Head
+    ctx.beginPath();
+    ctx.arc(0, headSize / 2, headSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Body
+    const bodyTop = headSize;
+    const bodyH = h * 0.42;
+    ctx.fillRect(-w * 0.3, bodyTop, w * 0.6, bodyH);
+    ctx.strokeRect(-w * 0.3, bodyTop, w * 0.6, bodyH);
+
+    // Arms
+    const armW = w * 0.15;
+    const armH = bodyH * 0.85;
+    ctx.fillRect(-w * 0.5, bodyTop + 4, armW, armH);
+    ctx.fillRect(w * 0.5 - armW, bodyTop + 4, armW, armH);
+
+    // Legs
+    const legH = h * 0.22;
+    ctx.fillRect(-w * 0.25, bodyTop + bodyH, w * 0.18, legH);
+    ctx.fillRect(w * 0.07, bodyTop + bodyH, w * 0.18, legH);
+
+    // Highlight edge
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(179,255,26,0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(0, headSize / 2, headSize / 2, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  /* ================================================================
+     EFFECT FUNCTIONS
+     Каждый принимает (ctx, cx, cy, t, color, scale)
+     scale — коэффициент размера (для hero ~ 1.0, для превью ~ 0.45)
+     ================================================================ */
+
+  function fx_aura(ctx, cx, cy, t, color, s) {
+    const R = 42 * s;
+    for (let ring = 0; ring < 2; ring++) {
+      const rr = R * (0.85 + ring * 0.28);
+      const alpha = 1 - ring * 0.4;
+      ctx.strokeStyle = hexA(color, alpha);
+      ctx.lineWidth = 1.6 * s;
+      setGlow(ctx, color, 10 * s);
+      ctx.beginPath();
+      for (let i = 0; i <= 48; i++) {
+        const a = (i / 48) * Math.PI * 2;
+        const yOffset = Math.sin(t * 2 + i * 0.4 + ring * 0.5) * 4 * s;
+        const x = cx + Math.cos(a) * rr;
+        const y = cy + yOffset + Math.sin(a) * rr * 0.3;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      clearGlow(ctx);
     }
   }
 
-  function rain() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (const r of raindrops) {
-      ctx.strokeStyle = r.hot
-        ? `rgba(255, 107, 26, ${r.alpha})`
-        : `rgba(220, 225, 235, ${r.alpha * 0.5})`;
-      ctx.lineWidth = r.hot ? 1.6 : 1;
+  function fx_crystals(ctx, cx, cy, t, color, s) {
+    const R = 46 * s;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.3 * s;
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 8; i++) {
+      const a = t + (i / 8) * Math.PI * 2;
+      const x = cx + Math.cos(a) * R;
+      const y = cy + Math.sin(a) * R * 0.5;
+      const dy = Math.sin(t + i * 0.8) * 6 * s;
+      const size = 7 * s;
+      // Diamond
       ctx.beginPath();
-      ctx.moveTo(r.x, r.y);
-      ctx.lineTo(r.x - r.len * 0.12, r.y + r.len);
+      ctx.moveTo(x, y - size + dy);
+      ctx.lineTo(x + size * 0.6, y + dy);
+      ctx.lineTo(x, y + size + dy);
+      ctx.lineTo(x - size * 0.6, y + dy);
+      ctx.closePath();
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_helix(ctx, cx, cy, t, color, s) {
+    const H = 90 * s;
+    const R = 26 * s;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4 * s;
+    setGlow(ctx, color, 8 * s);
+
+    for (let k = 0; k < 2; k++) {
+      ctx.beginPath();
+      for (let i = 0; i <= 60; i++) {
+        const p = i / 60;
+        const a = p * Math.PI * 6 + t * 2 + k * Math.PI;
+        const x = cx + Math.cos(a) * R * (1 - p * 0.5);
+        const y = cy + H / 2 - p * H;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_shockwave(ctx, cx, cy, t, color, s) {
+    const maxR = 65 * s;
+    ctx.lineWidth = 1.6 * s;
+    setGlow(ctx, color, 10 * s);
+    for (let w = 0; w < 3; w++) {
+      const ph = (t * 0.5 + w * 0.33) % 1;
+      const rr = ph * maxR;
+      const alpha = (1 - ph) * (1 - ph);
+      ctx.strokeStyle = hexA(color, alpha);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 30 * s, rr, rr * 0.35, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_compass(ctx, cx, cy, t, color, s) {
+    const R = 60 * s;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1.4 * s;
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 4; i++) {
+      const a = t * 0.8 + (i / 4) * Math.PI * 2;
+      const x1 = cx + Math.cos(a) * 20 * s;
+      const y1 = cy + Math.sin(a) * 20 * s;
+      const x2 = cx + Math.cos(a) * R;
+      const y2 = cy + Math.sin(a) * R;
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
       ctx.stroke();
 
-      r.y += r.speed;
-      r.x -= r.speed * 0.12;
-
-      if (r.y > canvas.height + 20) {
-        r.y = -20;
-        r.x = Math.random() * canvas.width + 40;
-      }
-      if (r.x < -20) r.x = canvas.width + 20;
+      // Arrow head
+      const perpA = a + Math.PI / 2;
+      const hs = 6 * s;
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 + Math.cos(perpA) * hs, y2 + Math.sin(perpA) * hs);
+      ctx.lineTo(x2 - Math.cos(perpA) * hs, y2 - Math.sin(perpA) * hs);
+      ctx.closePath();
+      ctx.fill();
     }
-    requestAnimationFrame(rain);
+    clearGlow(ctx);
   }
 
-  resize();
-  window.addEventListener('resize', resize);
-  rain();
+  function fx_inferno(ctx, cx, cy, t, color, s) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4 * s;
+    setGlow(ctx, color, 10 * s);
+    for (let i = 0; i < 14; i++) {
+      const a = (i / 14) * Math.PI * 2;
+      const baseR = 24 * s;
+      const x = cx + Math.cos(a) * baseR;
+      const y = cy + Math.sin(a) * baseR * 0.5;
+      const flicker = Math.sin(t * 8 + i * 1.7) * 0.5 + 0.5;
+      const h = (20 + flicker * 35) * s;
+      ctx.beginPath();
+      ctx.moveTo(x, y + 15 * s);
+      ctx.lineTo(x, y + 15 * s - h);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
 
-  /* ==================== Точки на радаре ==================== */
-  const radar = document.querySelector('.radar');
-  if (radar) {
-    const dots = [
-      { x: 62, y: 38, hot: false, delay: 0 },
-      { x: 78, y: 60, hot: false, delay: 0.4 },
-      { x: 30, y: 70, hot: true,  delay: 0.8 },
-      { x: 55, y: 25, hot: false, delay: 1.2 },
-      { x: 22, y: 45, hot: true,  delay: 1.6 },
-      { x: 82, y: 78, hot: false, delay: 2.0 }
-    ];
+  function fx_glacier(ctx, cx, cy, t, color, s) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4 * s;
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      const x = cx + Math.cos(a) * 42 * s;
+      const y = cy + Math.sin(a) * 42 * s * 0.5;
+      const h = (25 + Math.sin(t + i * 0.9) * 12) * s;
+      ctx.beginPath();
+      ctx.moveTo(x, y + 10 * s);
+      ctx.lineTo(x, y + 10 * s - h);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
 
-    dots.forEach(d => {
-      const el = document.createElement('div');
-      el.className = 'radar__dot' + (d.hot ? ' hot' : '');
-      el.style.left = d.x + '%';
-      el.style.top  = d.y + '%';
-      el.style.animationDelay = d.delay + 's';
-      radar.appendChild(el);
+  function fx_thunder(ctx, cx, cy, t, color, s) {
+    const cyc = t % 1.4;
+    if (cyc > 0.5) return;
+    const flick = 1 - cyc / 0.5;
+    ctx.strokeStyle = hexA(color, flick);
+    ctx.lineWidth = 1.6 * s;
+    setGlow(ctx, color, 12 * s);
+
+    // Main bolt
+    ctx.beginPath();
+    let x = cx + Math.sin(t * 3) * 15 * s;
+    let y = cy - 70 * s;
+    ctx.moveTo(x, y);
+    for (let i = 0; i < 6; i++) {
+      x += (Math.random() - 0.5) * 20 * s;
+      y += 22 * s;
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Branches
+    for (let b = 0; b < 3; b++) {
+      ctx.beginPath();
+      const bx = cx + (Math.random() - 0.5) * 30 * s;
+      const by = cy - (Math.random() * 30) * s;
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx + (Math.random() - 0.5) * 20 * s, by + 15 * s);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_blackhole(ctx, cx, cy, t, color, s) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4 * s;
+    setGlow(ctx, color, 8 * s);
+    for (let arm = 0; arm < 4; arm++) {
+      const baseA = t * 1.5 + (arm / 4) * Math.PI * 2;
+      ctx.beginPath();
+      for (let i = 0; i <= 30; i++) {
+        const p = i / 30;
+        const a = baseA + p * Math.PI * 3;
+        const rr = 55 * s * (1 - p * 0.9);
+        const x = cx + Math.cos(a) * rr;
+        const y = cy + Math.sin(a) * rr * 0.6;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_pulse(ctx, cx, cy, t, color, s) {
+    ctx.lineWidth = 1.6 * s;
+    setGlow(ctx, color, 10 * s);
+    for (let i = 0; i < 4; i++) {
+      const ph = (t * 0.6 + i * 0.25) % 1;
+      const rr = ph * 70 * s;
+      const alpha = 1 - ph;
+      ctx.strokeStyle = hexA(color, alpha);
+      ctx.beginPath();
+      ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_reticle(ctx, cx, cy, t, color, s) {
+    const gap = 18 * s;
+    const len = 60 * s;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5 * s;
+    setGlow(ctx, color, 10 * s);
+
+    // 4 crosshair lines
+    ctx.beginPath();
+    ctx.moveTo(cx - len, cy); ctx.lineTo(cx - gap, cy);
+    ctx.moveTo(cx + gap, cy); ctx.lineTo(cx + len, cy);
+    ctx.moveTo(cx, cy - len); ctx.lineTo(cx, cy - gap);
+    ctx.moveTo(cx, cy + gap); ctx.lineTo(cx, cy + len);
+    ctx.stroke();
+
+    // Rotating outer ring
+    ctx.beginPath();
+    for (let i = 0; i <= 60; i++) {
+      const a = (i / 60) * Math.PI * 2 + t * 1.5;
+      const x = cx + Math.cos(a) * gap * 1.7;
+      const y = cy + Math.sin(a) * gap * 1.7;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Center dot
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 2 * s, 0, Math.PI * 2);
+    ctx.fill();
+    clearGlow(ctx);
+  }
+
+  function fx_hologrid(ctx, cx, cy, t, color, s) {
+    ctx.strokeStyle = hexA(color, 0.7);
+    ctx.lineWidth = 1 * s;
+    setGlow(ctx, color, 6 * s);
+    const size = 60 * s;
+    const step = size / 4;
+    // Perspective grid around target
+    for (let i = -4; i <= 4; i++) {
+      ctx.beginPath();
+      ctx.moveTo(cx + i * step, cy - size * 0.5);
+      ctx.lineTo(cx + i * step * 0.7, cy + size * 0.5);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cx - size, cy + i * step * 0.5);
+      ctx.lineTo(cx + size, cy + i * step * 0.5);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_glitch(ctx, cx, cy, t, color, s) {
+    ctx.fillStyle = color;
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 14; i++) {
+      const seed = i * 2.71;
+      const cyc = (t * 0.8 + seed) % 1;
+      if (cyc > 0.25) continue;
+      const x = cx + Math.sin(seed * 5) * 55 * s;
+      const y = cy + Math.cos(seed * 7) * 40 * s;
+      const w = (6 + Math.random() * 12) * s;
+      const h = (2 + Math.random() * 4) * s;
+      ctx.fillRect(x, y, w, h);
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_nova(ctx, cx, cy, t, color, s) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4 * s;
+    setGlow(ctx, color, 10 * s);
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      const len = (40 + Math.sin(t * 4 + i * 0.5) * 25) * s;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * 6 * s, cy + Math.sin(a) * 6 * s);
+      ctx.lineTo(cx + Math.cos(a) * len, cy + Math.sin(a) * len);
+      ctx.stroke();
+    }
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4 * s, 0, Math.PI * 2);
+    ctx.fill();
+    clearGlow(ctx);
+  }
+
+  function fx_planets(ctx, cx, cy, t, color, s) {
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 5; i++) {
+      const a = t * (0.5 + i * 0.2) + (i / 5) * Math.PI * 2;
+      const rr = (28 + i * 10) * s;
+      const x = cx + Math.cos(a) * rr;
+      const y = cy + Math.sin(a) * rr * 0.5;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, (2.5 + i * 0.6) * s, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_ascension(ctx, cx, cy, t, color, s) {
+    ctx.fillStyle = color;
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 9; i++) {
+      const ph = (t * 0.5 + i * 0.11) % 1;
+      const a = (i / 9) * Math.PI * 2;
+      const x = cx + Math.cos(a) * 40 * s;
+      const y = cy + 40 * s - ph * 80 * s;
+      const alpha = 1 - ph;
+      ctx.fillStyle = hexA(color, alpha);
+      // Arrow
+      ctx.beginPath();
+      ctx.moveTo(x, y - 4 * s);
+      ctx.lineTo(x + 3 * s, y + 2 * s);
+      ctx.lineTo(x - 3 * s, y + 2 * s);
+      ctx.closePath();
+      ctx.fill();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_meteor(ctx, cx, cy, t, color, s) {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.2 * s;
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 6; i++) {
+      const seed = i * 1.7;
+      const ph = (t * 0.6 + seed) % 1;
+      const a = seed * 1.9;
+      const fromX = cx + Math.cos(a) * 60 * s;
+      const fromY = cy - 50 * s;
+      const x = fromX * (1 - ph * 0.85);
+      const y = fromY + ph * 85 * s;
+      const len = 12 * s;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 6 * s, y - len);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, 2 * s, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_gyro(ctx, cx, cy, t, color, s) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4 * s;
+    setGlow(ctx, color, 8 * s);
+    const R = 42 * s;
+    // 3 ellipses at different rotations
+    for (let k = 0; k < 3; k++) {
+      const rot = t * (0.6 + k * 0.3);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, R, R * 0.35, rot, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  function fx_marker(ctx, cx, cy, t, color, s) {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5 * s;
+    setGlow(ctx, color, 10 * s);
+
+    const bounce = Math.abs(Math.sin(t * 2)) * 6 * s;
+    const y = cy - 60 * s + bounce;
+
+    // Downward arrow
+    ctx.beginPath();
+    ctx.moveTo(cx - 8 * s, y);
+    ctx.lineTo(cx + 8 * s, y);
+    ctx.lineTo(cx, y + 12 * s);
+    ctx.closePath();
+    ctx.fill();
+
+    // Pulsing ring under target
+    const ringR = (35 + Math.sin(t * 3) * 4) * s;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 30 * s, ringR, ringR * 0.3, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    clearGlow(ctx);
+  }
+
+  function fx_spectrum(ctx, cx, cy, t, color, s) {
+    setGlow(ctx, color, 8 * s);
+    for (let i = 0; i < 24; i++) {
+      const a = (i / 24) * Math.PI * 2 + t * 0.5;
+      const hue = (i / 24 + t * 0.1) % 1;
+      const c = `hsl(${hue * 360}, 90%, 60%)`;
+      ctx.strokeStyle = c;
+      ctx.shadowColor = c;
+      ctx.lineWidth = 1.4 * s;
+      const r1 = 20 * s;
+      const r2 = 62 * s;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+      ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
+      ctx.stroke();
+    }
+    clearGlow(ctx);
+  }
+
+  /* --- Хелпер: hex → rgba --- */
+  function hexA(hex, a) {
+    if (hex.startsWith('hsl')) return hex;
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+
+  /* ================================================================
+     ARRAY OF EFFECT FUNCTIONS
+     ================================================================ */
+  const FX_FNS = [
+    fx_aura, fx_crystals, fx_helix, fx_shockwave, fx_compass,
+    fx_inferno, fx_glacier, fx_thunder, fx_blackhole, fx_pulse,
+    fx_reticle, fx_hologrid, fx_glitch, fx_nova, fx_planets,
+    fx_ascension, fx_meteor, fx_gyro, fx_marker, fx_spectrum
+  ];
+
+  /* ================================================================
+     CANVAS MANAGER — рисует эффекты на всех canvas'ах
+     ================================================================ */
+
+  const canvases = []; // { canvas, ctx, effectIndex, isHero, getScale }
+
+  function registerCanvas(canvas, effectIndex, isHero) {
+    const ctx = canvas.getContext('2d');
+    const entry = { canvas, ctx, effectIndex, isHero };
+    canvases.push(entry);
+    resizeEntry(entry);
+    return entry;
+  }
+
+  function resizeEntry(entry) {
+    const rect = entry.canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    entry.canvas.width  = rect.width * dpr;
+    entry.canvas.height = rect.height * dpr;
+    entry.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    entry.w = rect.width;
+    entry.h = rect.height;
+  }
+
+  window.addEventListener('resize', () => {
+    canvases.forEach(resizeEntry);
+  });
+
+  function render(ts) {
+    const t = ts / 1000;
+
+    for (const entry of canvases) {
+      // Отрисовываем только видимые
+      const rect = entry.canvas.getBoundingClientRect();
+      if (rect.bottom < -100 || rect.top > innerHeight + 100) continue;
+
+      const ctx = entry.ctx;
+      const w = entry.w;
+      const h = entry.h;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const s = entry.isHero ? 1 : 0.5;
+
+      // Target
+      drawTarget(ctx, cx, cy + (entry.isHero ? 10 : 0), entry.isHero ? 80 : 40);
+
+      // Effect
+      const effect = EFFECTS[entry.effectIndex];
+      const fn = FX_FNS[entry.effectIndex];
+      if (fn) fn(ctx, cx, cy, t, effect.color, s);
+    }
+
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+
+  /* ================================================================
+     HERO — большая сцена + switcher
+     ================================================================ */
+  const heroCanvas = document.getElementById('hero-canvas');
+  const heroEntry = registerCanvas(heroCanvas, 0, true);
+
+  const switcher = document.getElementById('switcher');
+  const hudName = document.getElementById('hud-name');
+  let currentEffect = 0;
+
+  function selectEffect(idx) {
+    currentEffect = idx;
+    heroEntry.effectIndex = idx;
+    hudName.textContent = EFFECTS[idx].name;
+
+    // Update active button
+    switcher.querySelectorAll('button').forEach((b, i) => {
+      b.classList.toggle('active', i === idx);
     });
   }
 
-  /* ==================== 20 эффектов ==================== */
-  const EFFECTS = [
-    { name: "Aura",      desc: "Двойное пульсирующее кольцо с вертикальной волной." },
-    { name: "Crystals",  desc: "Восемь парящих октаэдров вращаются вокруг цели." },
-    { name: "Helix",     desc: "Двойная спираль с перекладинами — как ДНК." },
-    { name: "Shockwave", desc: "Расходящиеся волны с эффектом затухания." },
-    { name: "Compass",   desc: "Четыре вращающихся указателя со стрелками." },
-    { name: "Inferno",   desc: "Столб огня с искрами, реагирующими на время." },
-    { name: "Glacier",   desc: "Ледяные пирамиды разной высоты вокруг." },
-    { name: "Thunder",   desc: "Случайные ветвящиеся молнии с ореолом." },
-    { name: "Blackhole", desc: "Пять спиралей, стягивающихся к центру." },
-    { name: "Pulse",     desc: "Концентрические волны, бегущие от центра." },
-    { name: "Reticle",   desc: "Снайперский прицел с вращающимся кольцом." },
-    { name: "HoloGrid",  desc: "Трёхмерная сетка в четырёх слоях высоты." },
-    { name: "Glitch",    desc: "Квадраты-помехи, появляющиеся вразнобой." },
-    { name: "Nova",      desc: "Взрыв звезды с двенадцатью шипами." },
-    { name: "Planets",   desc: "Планеты на орбитах разных радиусов." },
-    { name: "Ascension", desc: "Восходящие стрелки, тающие к верху." },
-    { name: "Meteor",    desc: "Метеоры с хвостом, падающие со всех сторон." },
-    { name: "Gyro",      desc: "Три вращающихся кольца в разных плоскостях." },
-    { name: "Marker",    desc: "Парящий маркер с пульсирующим кольцом." },
-    { name: "Spectrum",  desc: "Радужный вихрь — каждый луч в своём цвете." }
-  ];
+  EFFECTS.forEach((e, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = String(i + 1).padStart(2, '0');
+    btn.title = e.name;
+    btn.addEventListener('click', () => selectEffect(i));
+    switcher.appendChild(btn);
+  });
 
+  selectEffect(0);
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      selectEffect((currentEffect + 1) % 20);
+      e.preventDefault();
+    } else if (e.key === 'ArrowLeft') {
+      selectEffect((currentEffect + 19) % 20);
+      e.preventDefault();
+    } else if (e.key >= '1' && e.key <= '9') {
+      selectEffect(parseInt(e.key) - 1);
+    }
+  });
+
+  // Кнопки в switcher-е для mobile-пользователей
+  // Показываем kb-hint через 3 секунды, скрываем через 8
+  const hint = document.getElementById('kb-hint');
+  setTimeout(() => hint.classList.remove('hidden'), 100);
+  window.addEventListener('scroll', () => {
+    if (scrollY > 100) hint.classList.add('hidden');
+  }, { passive: true });
+
+  /* ================================================================
+     EFFECT CARDS GRID
+     ================================================================ */
   const grid = document.getElementById('fx-grid');
   EFFECTS.forEach((e, i) => {
     const num = String(i + 1).padStart(2, '0');
-    const ping = 12 + Math.floor(Math.random() * 20);
-
     const card = document.createElement('div');
     card.className = 'fx reveal';
     card.innerHTML = `
-      <div class="fx__ping">${ping} ms</div>
-      <div class="fx__num">FX-${num}</div>
-      <div class="fx__name">${e.name}</div>
-      <div class="fx__desc">${e.desc}</div>
+      <div class="fx__canvas">
+        <canvas></canvas>
+      </div>
+      <div class="fx__meta">
+        <div class="fx__num">${num}</div>
+        <div class="fx__body">
+          <div class="fx__name">${e.name}</div>
+          <div class="fx__desc">${e.desc}</div>
+        </div>
+      </div>
     `;
     grid.appendChild(card);
+
+    // Register canvas for this card
+    const canvas = card.querySelector('canvas');
+    registerCanvas(canvas, i, false);
   });
 
-  /* ==================== Scroll progress ==================== */
-  const progress = document.getElementById('progress');
+  /* ================================================================
+     NAV scroll state
+     ================================================================ */
   const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('on', scrollY > 20);
+  }, { passive: true });
 
-  function onScroll() {
-    const h = document.documentElement;
-    const scrolled = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-    progress.style.width = scrolled + '%';
-
-    if (window.scrollY > 20) nav.classList.add('on');
-    else nav.classList.remove('on');
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  /* ==================== Reveal on scroll ==================== */
+  /* ================================================================
+     Reveal on scroll
+     ================================================================ */
   const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('in');
-        io.unobserve(e.target);
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        en.target.classList.add('in');
+        io.unobserve(en.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
   document.querySelectorAll('.reveal').forEach((el, i) => {
     if (el.classList.contains('fx')) {
-      el.style.transitionDelay = ((i % 8) * 0.05) + 's';
+      el.style.transitionDelay = ((i % 6) * 0.05) + 's';
     }
     io.observe(el);
   });
 
-  /* ==================== Smooth scroll ==================== */
+  /* ================================================================
+     Smooth scroll
+     ================================================================ */
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href');
