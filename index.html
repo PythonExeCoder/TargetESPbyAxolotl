@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Axolotl Visuals — TargetESP tactical suite</title>
+
+<meta name="description" content="20 TargetESP эффектов для Minecraft Fabric. Тактический интерфейс, чистая геометрия, ноль лишнего." />
+<meta name="theme-color" content="#05070A" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Axolotl Visuals — TargetESP tactical suite" />
+<meta property="og:description" content="20 TargetESP эффектов. Тактический интерфейс, чистая геометрия." />
+<meta property="og:url" content="https://PythonExeCoder.github.io/axolotlvisuals/" />
+<meta property="og:image" content="https://PythonExeCoder.github.io/axolotlvisuals/preview.png" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2305070A'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23FF6B1A' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23FF6B1A'/%3E%3Cline x1='32' y1='6' x2='32' y2='18' stroke='%23FF6B1A' stroke-width='3'/%3E%3Cline x1='32' y1='46' x2='32' y2='58' stroke='%23FF6B1A' stroke-width='3'/%3E%3Cline x1='6' y1='32' x2='18' y2='32' stroke='%23FF6B1A' stroke-width='3'/%3E%3Cline x1='46' y1='32' x2='58' y2='32' stroke='%23FF6B1A' stroke-width='3'/%3E%3C/svg%3E" />
+
+<style>
+  /* ==================== Base ==================== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #05070A;
+    --panel: #0E1218;
+    --panel-2: #141A22;
+    --line: rgba(255,255,255,0.08);
+    --line-hot: rgba(255,107,26,0.35);
+    --text: #E8EAF0;
+    --text-dim: rgba(232,234,240,0.55);
+    --text-mute: rgba(232,234,240,0.3);
+    --accent: #FF6B1A;
+    --accent-hot: #FF2E2E;
+    --accent-cold: #22D3EE;
+    --ok: #4ADE80;
+  }
+
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    cursor: none;
+    position: relative;
+    min-height: 100vh;
+  }
+  @media (pointer: coarse) {
+    body { cursor: auto; }
+    .cur, .cur-frame, .cur-dot { display: none !important; }
+  }
+
+  /* Акцентная сетка */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,107,26,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,26,0.035) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 75%);
+  }
+
+  /* Сканлайны */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 95; pointer-events: none;
+    background: repeating-linear-gradient(0deg,
+      transparent 0, transparent 3px,
+      rgba(255,107,26,0.012) 3px, rgba(255,107,26,0.012) 4px);
+    mix-blend-mode: overlay;
+  }
+
+  ::selection { background: var(--accent); color: var(--bg); }
+  ::-webkit-scrollbar { width: 10px; background: var(--bg); }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent), var(--accent-hot));
+    border-radius: 0;
+  }
+
+  /* ==================== Дождь ==================== */
+  #rain {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    opacity: 0.55;
+  }
+
+  /* ==================== Курсор ==================== */
+  .cur {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    pointer-events: none; transform: translate(-50%, -50%);
+    width: 20px; height: 20px;
+    transition: transform .06s linear;
+  }
+  .cur::before,
+  .cur::after {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    transform: translate(-50%, -50%);
+  }
+  .cur::before { width: 20px; height: 2px; }
+  .cur::after  { width: 2px; height: 20px; }
+
+  .cur-frame {
+    position: fixed; top: 0; left: 0; z-index: 9998;
+    pointer-events: none; transform: translate(-50%, -50%);
+    width: 38px; height: 38px;
+    transition: width .25s cubic-bezier(.2,.8,.2,1),
+                height .25s cubic-bezier(.2,.8,.2,1),
+                opacity .25s;
+  }
+  .cur-frame span {
+    position: absolute; width: 10px; height: 10px;
+    border: 2px solid var(--accent);
+    transition: border-color .25s, transform .25s;
+  }
+  .cur-frame .tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+  .cur-frame .tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+  .cur-frame .bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+  .cur-frame .br { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+  .cur-frame.lock {
+    width: 60px; height: 60px;
+  }
+  .cur-frame.lock span {
+    border-color: var(--accent-hot);
+    box-shadow: 0 0 10px var(--accent-hot);
+  }
+  .cur-frame.click {
+    width: 26px; height: 26px;
+  }
+  .cur-frame.click span { border-color: var(--accent-hot); }
+
+  .cur-dot {
+    position: fixed; z-index: 9997; top: 0; left: 0;
+    width: 4px; height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 12px var(--accent);
+    pointer-events: none;
+    transition: opacity .3s;
+  }
+
+  /* ==================== Progress bar ==================== */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px;
+    z-index: 200; background: transparent;
+  }
+  .progress__bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-hot), var(--accent), var(--accent-cold));
+    width: 0%;
+    box-shadow: 0 0 12px var(--accent);
+    transition: width .1s linear;
+  }
+
+  /* ==================== Навигация ==================== */
+  .nav {
+    position: fixed; top: 2px; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px 42px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(5,7,10,0.72);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s, background .3s;
+  }
+  .nav.on { border-bottom-color: var(--line); background: rgba(5,7,10,0.9); }
+
+  .logo {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text); text-decoration: none;
+  }
+  .logo__mark {
+    width: 26px; height: 26px;
+    position: relative;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px rgba(255,107,26,0.5);
+  }
+  .logo__mark::before,
+  .logo__mark::after {
+    content: ''; position: absolute; background: var(--accent);
+  }
+  .logo__mark::before { left: 50%; top: -8px; bottom: -8px; width: 2px; transform: translateX(-50%); }
+  .logo__mark::after  { top: 50%; left: -8px; right: -8px; height: 2px; transform: translateY(-50%); }
+  .logo__mark i {
+    position: absolute; inset: 6px;
+    background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse-logo 2s ease-in-out infinite;
+  }
+  @keyframes pulse-logo {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(0.6); opacity: 0.6; }
+  }
+  .logo__suffix { color: var(--text-mute); margin-left: 4px; }
+
+  .nav__links {
+    display: flex; gap: 34px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .nav__links a {
+    color: var(--text-dim); text-decoration: none;
+    position: relative; padding: 6px 0;
+    transition: color .25s;
+  }
+  .nav__links a::before {
+    content: '> '; color: var(--accent); opacity: 0;
+    margin-right: -12px; transition: opacity .2s, margin-right .2s;
+  }
+  .nav__links a:hover { color: var(--accent); }
+  .nav__links a:hover::before { opacity: 1; margin-right: 0; }
+
+  .nav__right { display: flex; align-items: center; gap: 14px; }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-dim); text-decoration: none;
+    border: 1px solid var(--line);
+    background: transparent;
+    transition: color .25s, border-color .25s, background .25s;
+  }
+  .btn-ghost:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(255,107,26,0.08);
+  }
+  .btn-ghost svg { width: 14px; height: 14px; }
+
+  .btn-solid {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 11px 20px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--bg); text-decoration: none;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    position: relative;
+    transition: background .25s, box-shadow .25s, transform .25s;
+    box-shadow: 0 0 20px rgba(255,107,26,0.35);
+  }
+  .btn-solid:hover {
+    background: var(--accent-hot);
+    border-color: var(--accent-hot);
+    box-shadow: 0 0 30px rgba(255,46,46,0.6);
+    transform: translateY(-1px);
+  }
+  .btn-solid svg { width: 14px; height: 14px; }
+
+  @media (max-width: 900px) {
+    .nav { padding: 16px 20px; }
+    .nav__links { display: none; }
+    .logo__suffix { display: none; }
+  }
+
+  /* ==================== Общие контейнеры ==================== */
+  .wrap {
+    position: relative; z-index: 2;
+    max-width: 1240px; margin: 0 auto;
+    padding: 0 42px;
+  }
+  @media (max-width: 700px) { .wrap { padding: 0 20px; } }
+
+  /* ==================== Hero ==================== */
+  .hero {
+    padding: 150px 0 90px;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 70px;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+  }
+  @media (max-width: 1000px) {
+    .hero { grid-template-columns: 1fr; gap: 50px; padding: 130px 0 60px; min-height: auto; }
+  }
+
+  .hero__eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--line-hot);
+    background: rgba(255,107,26,0.06);
+    margin-bottom: 32px;
+    opacity: 0; animation: riseIn .8s .1s forwards;
+  }
+  .hero__eyebrow i {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+    animation: blink 1.4s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.3; }
+  }
+
+  .hero__title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: clamp(48px, 7vw, 110px);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+    margin-bottom: 28px;
+    opacity: 0; animation: riseIn 1s .2s forwards;
+  }
+  .hero__title .accent {
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+  }
+  .hero__title .accent::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -6px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    animation: sweep 3s ease-in-out infinite;
+  }
+  @keyframes sweep {
+    0%, 100% { transform: scaleX(0); transform-origin: left; }
+    50%      { transform: scaleX(1); transform-origin: left; }
+  }
+  .hero__title .mono {
+    display: block;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 0.32em;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-top: 20px;
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero__sub {
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin-bottom: 42px;
+    line-height: 1.65;
+    opacity: 0; animation: riseIn 1s .4s forwards;
+  }
+  .hero__sub b { color: var(--text); font-weight: 500; }
+
+  .hero__actions {
+    display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 42px;
+    opacity: 0; animation: riseIn 1s .55s forwards;
+  }
+
+  .btn-hero {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 16px 30px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--bg); text-decoration: none;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+    transition: background .25s, box-shadow .25s, transform .25s;
+    box-shadow: 0 0 30px rgba(255,107,26,0.35);
+  }
+  .btn-hero::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    transition: left .6s;
+  }
+  .btn-hero:hover::before { left: 100%; }
+  .btn-hero:hover {
+    background: var(--accent-hot);
+    border-color: var(--accent-hot);
+    box-shadow: 0 0 40px rgba(255,46,46,0.7);
+    transform: translateY(-2px);
+  }
+  .btn-hero svg { width: 16px; height: 16px; }
+
+  .btn-line {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 26px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--text); text-decoration: none;
+    background: transparent;
+    border: 1px solid var(--line);
+    transition: border-color .25s, color .25s, background .25s;
+  }
+  .btn-line:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,107,26,0.06);
+  }
+
+  .hero__stats {
+    display: flex; gap: 42px; flex-wrap: wrap;
+    padding-top: 30px;
+    border-top: 1px solid var(--line);
+    opacity: 0; animation: riseIn 1s .7s forwards;
+  }
+  .hero__stat {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+  }
+  .hero__stat .v {
+    font-size: 22px; font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .hero__stat .k {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-mute); margin-top: 4px;
+  }
+
+  /* ==================== Радар ==================== */
+  .radar-wrap {
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; animation: riseIn 1.2s .5s forwards;
+  }
+
+  .radar {
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 1 / 1;
+    position: relative;
+  }
+
+  .radar__grid {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at center,
+        transparent 0%, transparent 18%,
+        rgba(255,107,26,0.06) 18.5%, transparent 19%,
+        transparent 38%,
+        rgba(255,107,26,0.06) 38.5%, transparent 39%,
+        transparent 58%,
+        rgba(255,107,26,0.06) 58.5%, transparent 59%,
+        transparent 78%,
+        rgba(255,107,26,0.06) 78.5%, transparent 79%);
+    border: 1px solid var(--line-hot);
+    box-shadow: inset 0 0 80px rgba(255,107,26,0.08), 0 0 60px rgba(255,107,26,0.15);
+  }
+
+  .radar__cross {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(0deg, transparent calc(50% - 0.5px), rgba(255,107,26,0.15) 50%, transparent calc(50% + 0.5px)),
+      linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(255,107,26,0.15) 50%, transparent calc(50% + 0.5px));
+    border-radius: 50%;
+  }
+
+  .radar__sweep {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg at 50% 50%,
+      rgba(255,107,26,0) 0deg,
+      rgba(255,107,26,0.28) 45deg,
+      rgba(255,107,26,0.5) 90deg,
+      rgba(255,107,26,0) 91deg,
+      transparent 360deg);
+    animation: sweepRot 4s linear infinite;
+    mix-blend-mode: screen;
+  }
+  @keyframes sweepRot {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .radar__dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 12px var(--accent);
+    animation: dotBlink 2s ease-in-out infinite;
+  }
+  .radar__dot::after {
+    content: '';
+    position: absolute; inset: -8px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: dotRing 2s ease-out infinite;
+  }
+  @keyframes dotBlink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+  }
+  @keyframes dotRing {
+    0%   { transform: scale(0.4); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  .radar__dot.hot {
+    background: var(--accent-hot);
+    box-shadow: 0 0 14px var(--accent-hot);
+  }
+  .radar__dot.hot::after { border-color: var(--accent-hot); }
+
+  .radar__center {
+    position: absolute; left: 50%; top: 50%;
+    width: 14px; height: 14px;
+    transform: translate(-50%, -50%);
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 22px var(--accent);
+  }
+  .radar__center::before {
+    content: '';
+    position: absolute; inset: -8px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+
+  .radar__label {
+    position: absolute;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .radar__label.tl { top: 14px; left: 14px; }
+  .radar__label.tr { top: 14px; right: 14px; }
+  .radar__label.bl { bottom: 14px; left: 14px; }
+  .radar__label.br { bottom: 14px; right: 14px; color: var(--accent-hot); }
+
+  /* ==================== Секции ==================== */
+  section { padding: 110px 0; position: relative; z-index: 2; }
+
+  .sec-head { margin-bottom: 60px; }
+  .sec-head__tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .sec-head__tag::before {
+    content: ''; width: 8px; height: 8px;
+    background: var(--accent); box-shadow: 0 0 8px var(--accent);
+  }
+  .sec-head h2 {
+    font-weight: 800;
+    font-size: clamp(32px, 4.6vw, 60px);
+    line-height: 1.05; letter-spacing: -0.03em;
+    max-width: 780px;
+  }
+  .sec-head h2 em { font-style: normal; color: var(--accent); }
+  .sec-head p {
+    max-width: 620px;
+    margin-top: 22px;
+    color: var(--text-dim); font-size: 16.5px; line-height: 1.7;
+  }
+
+  /* ==================== Карточки эффектов ==================== */
+  .fx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .fx {
+    position: relative;
+    padding: 26px 24px 28px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    cursor: none;
+    transition: border-color .35s, background .35s, transform .35s;
+    overflow: hidden;
+    min-height: 148px;
+    display: flex; flex-direction: column;
+  }
+  .fx:hover {
+    border-color: var(--accent);
+    background: var(--panel-2);
+    transform: translateY(-3px);
+  }
+
+  /* Уголки прицела */
+  .fx::before,
+  .fx::after {
+    content: ''; position: absolute;
+    width: 14px; height: 14px;
+    border: 2px solid var(--accent);
+    opacity: 0;
+    transition: opacity .3s, transform .3s;
+  }
+  .fx::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .fx::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+  .fx:hover::before,
+  .fx:hover::after { opacity: 1; }
+  .fx:hover::before { transform: translate(-3px, -3px); }
+  .fx:hover::after  { transform: translate(3px, 3px); }
+
+  /* Пинг-индикатор */
+  .fx__ping {
+    position: absolute;
+    top: 14px; right: 14px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--text-mute);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .fx__ping::before {
+    content: ''; width: 5px; height: 5px;
+    background: var(--ok); border-radius: 50%;
+    box-shadow: 0 0 6px var(--ok);
+  }
+  .fx:hover .fx__ping { color: var(--accent); }
+
+  .fx__num {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fx__num::before {
+    content: ''; width: 18px; height: 1px;
+    background: var(--accent);
+  }
+
+  .fx__name {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .fx__desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-top: auto;
+  }
+
+  /* ==================== Терминал ==================== */
+  .terminal {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .terminal::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .terminal__head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--line);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .terminal__head i {
+    width: 10px; height: 10px;
+    border: 1px solid var(--text-mute);
+  }
+  .terminal__head .grow { flex: 1; }
+  .terminal__head .live {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--accent);
+  }
+  .terminal__head .live::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+    animation: blink 1.4s ease-in-out infinite;
+  }
+
+  .terminal__body {
+    padding: 24px 26px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .terminal__body .p { color: var(--accent); margin-right: 10px; }
+  .terminal__body .c { color: var(--text-dim); }
+  .terminal__body .m { color: var(--text-mute); }
+  .terminal__body .ok { color: var(--ok); }
+  .terminal__body .warn { color: var(--accent-hot); }
+  .terminal__body .bl { display: block; height: 8px; }
+
+  .caret {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--accent);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blink 1s steps(2) infinite;
+  }
+
+  /* ==================== Двухколоночная секция ==================== */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 60px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; gap: 40px; } }
+
+  /* ==================== Характеристики ==================== */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stats .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .stats .stat:nth-child(2) { border-right: none; }
+  }
+
+  .stat {
+    padding: 50px 30px;
+    border-right: 1px solid var(--line);
+    position: relative;
+  }
+  .stat:last-child { border-right: none; }
+  @media (max-width: 760px) { .stat:last-child { border-right: none; } }
+
+  .stat__v {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: clamp(42px, 5vw, 68px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--text);
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .stat__v em {
+    font-style: normal;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 0.32em;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .stat__k {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-top: 10px;
+  }
+  .stat__bar {
+    height: 2px;
+    margin-top: 18px;
+    background: var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat__bar::after {
+    content: '';
+    position: absolute; top: 0; left: 0; bottom: 0;
+    width: var(--w, 60%);
+    background: linear-gradient(90deg, var(--accent), var(--accent-hot));
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ==================== CTA ==================== */
+  .cta {
+    position: relative;
+    padding: 90px 60px;
+    background: linear-gradient(180deg, var(--panel), var(--bg));
+    border: 1px solid var(--line);
+    overflow: hidden;
+    text-align: center;
+  }
+  .cta::before {
+    content: '';
+    position: absolute; inset: -50%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(255,107,26,0.16) 60deg, transparent 120deg);
+    animation: ctaRot 10s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes ctaRot { to { transform: rotate(360deg); } }
+
+  .cta > * { position: relative; }
+
+  .cta__tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--line-hot);
+    margin-bottom: 32px;
+  }
+  .cta h2 {
+    font-weight: 800;
+    font-size: clamp(34px, 5vw, 68px);
+    line-height: 1.02; letter-spacing: -0.035em;
+    margin-bottom: 22px;
+  }
+  .cta h2 em { font-style: normal; color: var(--accent); }
+  .cta p {
+    max-width: 520px; margin: 0 auto 42px;
+    color: var(--text-dim); font-size: 16.5px;
+  }
+  .cta__actions {
+    display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  }
+
+  /* ==================== Футер ==================== */
+  footer {
+    padding: 44px 0;
+    border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-mute);
+    position: relative; z-index: 2;
+  }
+  .foot {
+    display: flex; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap; align-items: center;
+  }
+  .foot a {
+    color: var(--text-dim); text-decoration: none;
+    transition: color .25s;
+  }
+  .foot a:hover { color: var(--accent); }
+  .foot__links { display: flex; gap: 26px; flex-wrap: wrap; }
+
+  /* ==================== Reveal ==================== */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity .9s cubic-bezier(.2,.7,.2,1),
+                transform .9s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Курсор -->
+<div class="cur-frame" id="frame">
+  <span class="tl"></span><span class="tr"></span>
+  <span class="bl"></span><span class="br"></span>
+</div>
+<div class="cur" id="cur"></div>
+<div class="cur-dot" id="dot"></div>
+
+<!-- Прогресс -->
+<div class="progress"><div class="progress__bar" id="progress"></div></div>
+
+<!-- Дождь -->
+<canvas id="rain"></canvas>
+
+<!-- ==================== NAV ==================== -->
+<nav class="nav" id="nav">
+  <a href="#" class="logo">
+    <div class="logo__mark"><i></i></div>
+    <span>Axolotl</span>
+    <span class="logo__suffix">/ visuals</span>
+  </a>
+
+  <div class="nav__links">
+    <a href="#effects">Эффекты</a>
+    <a href="#how">Под капотом</a>
+    <a href="#install">Установка</a>
+  </div>
+
+  <div class="nav__right">
+    <a class="btn-ghost" href="https://github.com/PythonExeCoder/axolotlvisuals" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/>
+      </svg>
+      <span>GitHub</span>
+    </a>
+    <a class="btn-solid" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      .jar
+    </a>
+  </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="hero__eyebrow">
+        <i></i>
+        Fabric 1.21.11 · 20 effects · v1.0
+      </div>
+
+      <h1 class="hero__title">
+        Прицел <span class="accent">захвата</span><br>
+        цели.
+        <span class="mono">target esp tactical suite</span>
+      </h1>
+
+      <p class="hero__sub">
+        Один <b>.jar</b> для Minecraft. Открываешь меню клавишей <b>Ё</b> — выбираешь
+        один из&nbsp;20&nbsp;эффектов — наводишь прицел на&nbsp;игрока. Всё остальное
+        делает мод.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn-hero" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Скачать .jar
+        </a>
+        <a class="btn-line" href="#effects">
+          Список эффектов
+        </a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <div class="v">20</div>
+          <div class="k">effects</div>
+        </div>
+        <div class="hero__stat">
+          <div class="v">&lt;1%</div>
+          <div class="k">fps drop</div>
+        </div>
+        <div class="hero__stat">
+          <div class="v">32m</div>
+          <div class="k">range</div>
+        </div>
+        <div class="hero__stat">
+          <div class="v">Ё</div>
+          <div class="k">hotkey</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Радар -->
+    <div class="radar-wrap">
+      <div class="radar">
+        <div class="radar__grid"></div>
+        <div class="radar__cross"></div>
+        <div class="radar__sweep"></div>
+        <div class="radar__center"></div>
+
+        <span class="radar__label tl">scan</span>
+        <span class="radar__label tr">32 m</span>
+        <span class="radar__label bl">fabric 1.21.11</span>
+        <span class="radar__label br">● live</span>
+
+        <!-- Точки целей (генерируются JS) -->
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== ЭФФЕКТЫ ==================== -->
+<section id="effects">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-head__tag">01 / Библиотека</div>
+      <h2>Двадцать <em>стилей захвата</em> — от строгих до космических.</h2>
+      <p>
+        Каждый эффект — отдельная геометрия, своя скорость анимации, свой ритм.
+        Переключаются мгновенно, из меню или с клавиши.
+      </p>
+    </div>
+
+    <div class="fx-grid" id="fx-grid"><!-- заполняется JS --></div>
+  </div>
+</section>
+
+<!-- ==================== ПОД КАПОТОМ ==================== -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-head__tag">02 / Под капотом</div>
+      <h2>Чистая математика, <em>нулевая нагрузка</em>.</h2>
+    </div>
+
+    <div class="split">
+      <div class="reveal">
+        <p style="color:var(--text-dim); font-size:16.5px; line-height:1.75; margin-bottom:24px;">
+          Каждый тик мод пускает луч от&nbsp;глаз игрока на&nbsp;<b style="color:var(--text)">32&nbsp;блока</b>.
+          Если луч пересекает хитбокс другого игрока — включается рендер.
+        </p>
+        <p style="color:var(--text-dim); font-size:16.5px; line-height:1.75; margin-bottom:24px;">
+          Сами эффекты — <b style="color:var(--text)">чистая геометрия</b> поверх мира.
+          Никаких текстур, частиц и&nbsp;тяжёлых шейдеров. Только линии в&nbsp;мировых координатах.
+        </p>
+        <p style="color:var(--text-dim); font-size:16.5px; line-height:1.75;">
+          Всякий раз, когда луч не&nbsp;находит цель&nbsp;— рендер <b style="color:var(--accent)">не&nbsp;вызывается вовсе</b>.
+          Ноль лишних вычислений, ноль нагрузки.
+        </p>
+      </div>
+
+      <div class="terminal reveal">
+        <div class="terminal__head">
+          <i></i>
+          <span>axolotl-visuals</span>
+          <span class="grow"></span>
+          <span class="live">running</span>
+        </div>
+        <div class="terminal__body">
+          <span class="p">$</span><span class="c">java -jar axolotlvisuals-1.0.0.jar</span>
+          <span class="bl"></span>
+          <span class="m">// initializing client mod</span>
+          <span class="bl"></span>
+          <span class="p">&gt;</span><span class="c">register keybinding</span><span class="m"> "Ё"</span>
+          <span class="bl"></span>
+          <span class="p">&gt;</span><span class="c">register world render hook</span>
+          <span class="bl"></span>
+          <span class="p">&gt;</span><span class="c">load 20 effects</span>
+          <span class="bl"></span>
+          <span class="ok">✓ ready in 0.31s</span>
+          <span class="bl"></span>
+          <span class="m">// runtime status</span>
+          <span class="bl"></span>
+          <span class="p">&gt;</span><span class="c">fps impact</span>
+          <span class="warn"> &lt;1%</span>
+          <span class="bl"></span>
+          <span class="p">&gt;</span><span class="c">avg. render ms</span>
+          <span class="warn"> 0.02</span>
+          <span class="bl"></span>
+          <span class="p">&gt;</span><span class="c">targets tracked</span>
+          <span class="ok"> 1</span>
+          <span class="bl"></span>
+          <span class="p">&gt;</span><span class="caret"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ХАРАКТЕРИСТИКИ ==================== -->
+<section style="padding: 0 0 110px;">
+  <div class="wrap">
+    <div class="stats reveal">
+      <div class="stat">
+        <div class="stat__v">20<em>fx</em></div>
+        <div class="stat__k">эффектов</div>
+        <div class="stat__bar" style="--w: 100%;"></div>
+      </div>
+      <div class="stat">
+        <div class="stat__v">0.02<em>ms</em></div>
+        <div class="stat__k">на кадр</div>
+        <div class="stat__bar" style="--w: 8%;"></div>
+      </div>
+      <div class="stat">
+        <div class="stat__v">32<em>m</em></div>
+        <div class="stat__k">дистанция</div>
+        <div class="stat__bar" style="--w: 65%;"></div>
+      </div>
+      <div class="stat">
+        <div class="stat__v">0<em>dep</em></div>
+        <div class="stat__k">зависимостей</div>
+        <div class="stat__bar" style="--w: 0%;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== УСТАНОВКА ==================== -->
+<section id="install">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-head__tag">03 / Установка</div>
+      <h2>Тридцать секунд до <em>первого захвата</em>.</h2>
+      <p>
+        Скачай jar и положи в папку mods рядом с Fabric API. Запусти игру под профилем
+        Fabric 1.21.11 — всё.
+      </p>
+    </div>
+
+    <div class="terminal reveal">
+      <div class="terminal__head">
+        <i></i>
+        <span>windows · powershell</span>
+        <span class="grow"></span>
+        <span class="m">step by step</span>
+      </div>
+      <div class="terminal__body">
+        <span class="p">1.</span><span class="c">explorer %appdata%\.minecraft\mods</span>
+        <span class="bl"></span>
+        <span class="p">2.</span><span class="c">скопировать</span><span class="m"> axolotlvisuals-1.0.0.jar</span>
+        <span class="bl"></span>
+        <span class="p">3.</span><span class="c">скопировать</span><span class="m"> fabric-api-0.141.6+1.21.11.jar</span>
+        <span class="bl"></span>
+        <span class="p">4.</span><span class="c">запустить Minecraft → профиль Fabric 1.21.11</span>
+        <span class="bl"></span>
+        <span class="p">5.</span><span class="c">зайти в мир → нажать</span><span class="ok"> Ё</span>
+        <span class="bl"></span>
+        <span class="ok">✓ готово. Меню открыто.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CTA ==================== -->
+<section style="padding-top: 0;">
+  <div class="wrap">
+    <div class="cta reveal">
+      <div class="cta__tag">● ready to deploy</div>
+      <h2>Готов <em>взять цель</em>?</h2>
+      <p>
+        Один файл, ноль зависимостей, 20&nbsp;стилей. Наводи прицел — и&nbsp;мир вокруг
+        цели оживает.
+      </p>
+      <div class="cta__actions">
+        <a class="btn-hero" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Скачать axolotlvisuals-1.0.0.jar
+        </a>
+        <a class="btn-line" href="https://github.com/PythonExeCoder/axolotlvisuals/releases" target="_blank" rel="noopener">
+          Все релизы
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span>© 2026 Axolotl Visuals · fabric 1.21.11 · java 21</span>
+      <div class="foot__links">
+        <a href="#effects">Эффекты</a>
+        <a href="#install">Установка</a>
+        <a href="https://github.com/PythonExeCoder/axolotlvisuals" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/PythonExeCoder/axolotlvisuals/issues" target="_blank" rel="noopener">Обратная связь</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ==================== Курсор ==================== */
+  const cur   = document.getElementById('cur');
+  const frame = document.getElementById('frame');
+  const dot   = document.getElementById('dot');
+
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let fx = mx, fy = my;
+  let dx = mx, dy = my;
+
+  window.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+  });
+
+  function loop() {
+    fx += (mx - fx) * 0.16;
+    fy += (my - fy) * 0.16;
+    frame.style.transform = `translate(${fx}px, ${fy}px) translate(-50%, -50%)`;
+
+    dx += (mx - dx) * 0.35;
+    dy += (my - dy) * 0.35;
+    dot.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
+
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  // Hover — frame превращается в прицел
+  document.querySelectorAll('a, button, .fx').forEach(el => {
+    el.addEventListener('mouseenter', () => frame.classList.add('lock'));
+    el.addEventListener('mouseleave', () => frame.classList.remove('lock'));
+  });
+
+  window.addEventListener('mousedown', () => frame.classList.add('click'));
+  window.addEventListener('mouseup',   () => frame.classList.remove('click'));
+
+  /* ==================== Дождь ==================== */
+  const canvas = document.getElementById('rain');
+  const ctx = canvas.getContext('2d');
+  let raindrops = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const count = Math.floor((canvas.width * canvas.height) / 12000);
+    raindrops = [];
+    for (let i = 0; i < count; i++) {
+      raindrops.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        len: 12 + Math.random() * 22,
+        speed: 4 + Math.random() * 6,
+        alpha: 0.15 + Math.random() * 0.5,
+        hot: Math.random() > 0.92
+      });
+    }
+  }
+
+  function rain() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const r of raindrops) {
+      ctx.strokeStyle = r.hot
+        ? `rgba(255, 107, 26, ${r.alpha})`
+        : `rgba(220, 225, 235, ${r.alpha * 0.5})`;
+      ctx.lineWidth = r.hot ? 1.6 : 1;
+      ctx.beginPath();
+      ctx.moveTo(r.x, r.y);
+      ctx.lineTo(r.x - r.len * 0.12, r.y + r.len);
+      ctx.stroke();
+
+      r.y += r.speed;
+      r.x -= r.speed * 0.12;
+
+      if (r.y > canvas.height + 20) {
+        r.y = -20;
+        r.x = Math.random() * canvas.width + 40;
+      }
+      if (r.x < -20) r.x = canvas.width + 20;
+    }
+    requestAnimationFrame(rain);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  rain();
+
+  /* ==================== Точки на радаре ==================== */
+  const radar = document.querySelector('.radar');
+  if (radar) {
+    const dots = [
+      { x: 62, y: 38, hot: false, delay: 0 },
+      { x: 78, y: 60, hot: false, delay: 0.4 },
+      { x: 30, y: 70, hot: true,  delay: 0.8 },
+      { x: 55, y: 25, hot: false, delay: 1.2 },
+      { x: 22, y: 45, hot: true,  delay: 1.6 },
+      { x: 82, y: 78, hot: false, delay: 2.0 }
+    ];
+
+    dots.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'radar__dot' + (d.hot ? ' hot' : '');
+      el.style.left = d.x + '%';
+      el.style.top  = d.y + '%';
+      el.style.animationDelay = d.delay + 's';
+      radar.appendChild(el);
+    });
+  }
+
+  /* ==================== 20 эффектов ==================== */
+  const EFFECTS = [
+    { name: "Aura",      desc: "Двойное пульсирующее кольцо с вертикальной волной." },
+    { name: "Crystals",  desc: "Восемь парящих октаэдров вращаются вокруг цели." },
+    { name: "Helix",     desc: "Двойная спираль с перекладинами — как ДНК." },
+    { name: "Shockwave", desc: "Расходящиеся волны с эффектом затухания." },
+    { name: "Compass",   desc: "Четыре вращающихся указателя со стрелками." },
+    { name: "Inferno",   desc: "Столб огня с искрами, реагирующими на время." },
+    { name: "Glacier",   desc: "Ледяные пирамиды разной высоты вокруг." },
+    { name: "Thunder",   desc: "Случайные ветвящиеся молнии с ореолом." },
+    { name: "Blackhole", desc: "Пять спиралей, стягивающихся к центру." },
+    { name: "Pulse",     desc: "Концентрические волны, бегущие от центра." },
+    { name: "Reticle",   desc: "Снайперский прицел с вращающимся кольцом." },
+    { name: "HoloGrid",  desc: "Трёхмерная сетка в четырёх слоях высоты." },
+    { name: "Glitch",    desc: "Квадраты-помехи, появляющиеся вразнобой." },
+    { name: "Nova",      desc: "Взрыв звезды с двенадцатью шипами." },
+    { name: "Planets",   desc: "Планеты на орбитах разных радиусов." },
+    { name: "Ascension", desc: "Восходящие стрелки, тающие к верху." },
+    { name: "Meteor",    desc: "Метеоры с хвостом, падающие со всех сторон." },
+    { name: "Gyro",      desc: "Три вращающихся кольца в разных плоскостях." },
+    { name: "Marker",    desc: "Парящий маркер с пульсирующим кольцом." },
+    { name: "Spectrum",  desc: "Радужный вихрь — каждый луч в своём цвете." }
+  ];
+
+  const grid = document.getElementById('fx-grid');
+  EFFECTS.forEach((e, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    const ping = 12 + Math.floor(Math.random() * 20);
+
+    const card = document.createElement('div');
+    card.className = 'fx reveal';
+    card.innerHTML = `
+      <div class="fx__ping">${ping} ms</div>
+      <div class="fx__num">FX-${num}</div>
+      <div class="fx__name">${e.name}</div>
+      <div class="fx__desc">${e.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  /* ==================== Scroll progress ==================== */
+  const progress = document.getElementById('progress');
+  const nav = document.getElementById('nav');
+
+  function onScroll() {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    progress.style.width = scrolled + '%';
+
+    if (window.scrollY > 20) nav.classList.add('on');
+    else nav.classList.remove('on');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ==================== Reveal on scroll ==================== */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    if (el.classList.contains('fx')) {
+      el.style.transitionDelay = ((i % 8) * 0.05) + 's';
+    }
+    io.observe(el);
+  });
+
+  /* ==================== Smooth scroll ==================== */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      if (id.length > 1) {
+        const t = document.querySelector(id);
+        if (t) {
+          e.preventDefault();
+          t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
