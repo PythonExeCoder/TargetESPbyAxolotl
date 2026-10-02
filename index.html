@@ -8,6 +8,12 @@
 <meta name="description" content="20 TargetESP эффектов для Minecraft Fabric 1.21.11. Открытый код, один .jar, ноль лишнего." />
 <meta name="theme-color" content="#08080a" />
 
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Axolotl Visuals — 20 живых TargetESP" />
+<meta property="og:description" content="20 TargetESP эффектов для Minecraft. Fabric 1.21.11, ноль зависимостей." />
+<meta property="og:url" content="https://PythonExeCoder.github.io/TargetESPbyAxolotl/" />
+<meta property="og:image" content="https://PythonExeCoder.github.io/TargetESPbyAxolotl/preview.png" />
+
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308080a'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23b3ff1a' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23b3ff1a'/%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,7 +63,6 @@
   ::-webkit-scrollbar-thumb { background: #26262e; }
   ::-webkit-scrollbar-thumb:hover { background: var(--lime); }
 
-  /* Noise overlay */
   body::before {
     content: '';
     position: fixed; inset: 0; z-index: 9998;
@@ -453,16 +458,6 @@
     height: 100%;
     display: block;
   }
-
-  /* Corner brackets */
-  .stage__frame::after {
-    content: '';
-    position: absolute;
-    inset: 14px;
-    border: 1px solid transparent;
-    border-image: none;
-    pointer-events: none;
-  }
   .stage__corner {
     position: absolute;
     width: 18px; height: 18px;
@@ -476,7 +471,6 @@
   .stage__corner.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
   .stage__corner.br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
 
-  /* Overlay UI on stage */
   .stage__overlay {
     position: absolute;
     inset: 0;
@@ -1074,13 +1068,13 @@
   </div>
 
   <div class="nav__actions">
-    <a class="btn btn--ghost btn--small" href="https://github.com/PythonExeCoder/axolotlvisuals" target="_blank" rel="noopener">
+    <a class="btn btn--ghost btn--small" href="https://github.com/PythonExeCoder/TargetESPbyAxolotl" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/>
       </svg>
       GitHub
     </a>
-    <a class="btn btn--primary btn--small" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+    <a class="btn btn--primary btn--small" href="https://github.com/PythonExeCoder/TargetESPbyAxolotl/releases/latest/download/axolotlvisuals-1.0.0.jar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="7 10 12 15 17 10"/>
@@ -1114,7 +1108,7 @@
         </p>
 
         <div class="hero__actions">
-          <a class="btn btn--primary" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+          <a class="btn btn--primary" href="https://github.com/PythonExeCoder/TargetESPbyAxolotl/releases/latest/download/axolotlvisuals-1.0.0.jar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
@@ -1142,7 +1136,7 @@
             <div class="stage__hud br">● 60 FPS</div>
           </div>
         </div>
-        <div class="switcher" id="switcher"><!-- генерируется JS --></div>
+        <div class="switcher" id="switcher"></div>
       </div>
     </div>
 
@@ -1315,7 +1309,7 @@
       <h2>Готов <em>взять цель</em>?</h2>
       <p>Один файл. Двадцать стилей. Ноль зависимостей. Наводи прицел — мир вокруг цели оживает.</p>
       <div class="cta__actions">
-        <a class="btn btn--primary" href="https://github.com/PythonExeCoder/axolotlvisuals/releases/latest/download/axolotlvisuals-1.0.0.jar">
+        <a class="btn btn--primary" href="https://github.com/PythonExeCoder/TargetESPbyAxolotl/releases/latest/download/axolotlvisuals-1.0.0.jar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
@@ -1323,7 +1317,7 @@
           </svg>
           Скачать .jar
         </a>
-        <a class="btn btn--ghost" href="https://github.com/PythonExeCoder/axolotlvisuals/releases" target="_blank" rel="noopener">
+        <a class="btn btn--ghost" href="https://github.com/PythonExeCoder/TargetESPbyAxolotl/releases" target="_blank" rel="noopener">
           Все релизы
         </a>
       </div>
@@ -1339,8 +1333,8 @@
       <div class="foot__links">
         <a href="#effects">эффекты</a>
         <a href="#install">установка</a>
-        <a href="https://github.com/PythonExeCoder/axolotlvisuals" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://github.com/PythonExeCoder/axolotlvisuals/issues" target="_blank" rel="noopener">Issues</a>
+        <a href="https://github.com/PythonExeCoder/TargetESPbyAxolotl" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/PythonExeCoder/TargetESPbyAxolotl/issues" target="_blank" rel="noopener">Issues</a>
       </div>
     </div>
   </div>
@@ -1352,18 +1346,14 @@
 </div>
 
 <script>
-  /* ================================================================
-     BOOT PRELOADER
-     ================================================================ */
+  /* ================= BOOT ================= */
   window.addEventListener('load', () => {
     setTimeout(() => {
       document.getElementById('boot').classList.add('done');
     }, 1500);
   });
 
-  /* ================================================================
-     CUSTOM CURSOR
-     ================================================================ */
+  /* ================= CURSOR ================= */
   const reticle = document.getElementById('reticle');
   const reticleOuter = document.getElementById('reticle-outer');
   let mx = innerWidth / 2, my = innerHeight / 2;
@@ -1389,10 +1379,7 @@
   window.addEventListener('mousedown', () => reticleOuter.classList.add('click'));
   window.addEventListener('mouseup',   () => reticleOuter.classList.remove('click'));
 
-  /* ================================================================
-     EFFECTS ENGINE — все 20 эффектов рисуются на canvas
-     ================================================================ */
-
+  /* ================= EFFECTS ================= */
   const EFFECTS = [
     { name: 'AURA',       color: '#b3ff1a', desc: 'Двойное пульсирующее кольцо с вертикальной волной.' },
     { name: 'CRYSTALS',   color: '#3dd5ff', desc: 'Восемь парящих октаэдров вращаются вокруг цели.' },
@@ -1416,7 +1403,6 @@
     { name: 'SPECTRUM',   color: '#b3ff1a', desc: 'Радужный вихрь — каждый луч в своём цвете.' }
   ];
 
-  /* --- Хелперы рисования --- */
   function setGlow(ctx, color, blur = 6) {
     ctx.shadowColor = color;
     ctx.shadowBlur = blur;
@@ -1426,9 +1412,7 @@
     ctx.shadowColor = 'transparent';
   }
 
-  /* --- Рисуем мишень (simple humanoid) --- */
   function drawTarget(ctx, cx, cy, scale) {
-    // scale = высота фигуры в пикселях
     const h = scale;
     const w = h * 0.42;
     const headSize = h * 0.28;
@@ -1436,42 +1420,34 @@
     ctx.save();
     ctx.translate(cx, cy - h / 2);
 
-    // Glow
     ctx.shadowColor = 'rgba(179,255,26,0.4)';
     ctx.shadowBlur = 20;
 
-    // Body
     ctx.fillStyle = '#2a2a34';
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.lineWidth = 1;
 
-    // Head
     ctx.beginPath();
     ctx.arc(0, headSize / 2, headSize / 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    // Body
     const bodyTop = headSize;
     const bodyH = h * 0.42;
     ctx.fillRect(-w * 0.3, bodyTop, w * 0.6, bodyH);
     ctx.strokeRect(-w * 0.3, bodyTop, w * 0.6, bodyH);
 
-    // Arms
     const armW = w * 0.15;
     const armH = bodyH * 0.85;
     ctx.fillRect(-w * 0.5, bodyTop + 4, armW, armH);
     ctx.fillRect(w * 0.5 - armW, bodyTop + 4, armW, armH);
 
-    // Legs
     const legH = h * 0.22;
     ctx.fillRect(-w * 0.25, bodyTop + bodyH, w * 0.18, legH);
     ctx.fillRect(w * 0.07, bodyTop + bodyH, w * 0.18, legH);
 
-    // Highlight edge
     ctx.shadowBlur = 0;
     ctx.strokeStyle = 'rgba(179,255,26,0.35)';
-    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(0, headSize / 2, headSize / 2, 0, Math.PI * 2);
     ctx.stroke();
@@ -1479,12 +1455,7 @@
     ctx.restore();
   }
 
-  /* ================================================================
-     EFFECT FUNCTIONS
-     Каждый принимает (ctx, cx, cy, t, color, scale)
-     scale — коэффициент размера (для hero ~ 1.0, для превью ~ 0.45)
-     ================================================================ */
-
+  /* ---- 20 effect functions ---- */
   function fx_aura(ctx, cx, cy, t, color, s) {
     const R = 42 * s;
     for (let ring = 0; ring < 2; ring++) {
@@ -1518,7 +1489,6 @@
       const y = cy + Math.sin(a) * R * 0.5;
       const dy = Math.sin(t + i * 0.8) * 6 * s;
       const size = 7 * s;
-      // Diamond
       ctx.beginPath();
       ctx.moveTo(x, y - size + dy);
       ctx.lineTo(x + size * 0.6, y + dy);
@@ -1536,7 +1506,6 @@
     ctx.strokeStyle = color;
     ctx.lineWidth = 1.4 * s;
     setGlow(ctx, color, 8 * s);
-
     for (let k = 0; k < 2; k++) {
       ctx.beginPath();
       for (let i = 0; i <= 60; i++) {
@@ -1580,13 +1549,10 @@
       const y1 = cy + Math.sin(a) * 20 * s;
       const x2 = cx + Math.cos(a) * R;
       const y2 = cy + Math.sin(a) * R;
-
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
       ctx.stroke();
-
-      // Arrow head
       const perpA = a + Math.PI / 2;
       const hs = 6 * s;
       ctx.beginPath();
@@ -1642,8 +1608,6 @@
     ctx.strokeStyle = hexA(color, flick);
     ctx.lineWidth = 1.6 * s;
     setGlow(ctx, color, 12 * s);
-
-    // Main bolt
     ctx.beginPath();
     let x = cx + Math.sin(t * 3) * 15 * s;
     let y = cy - 70 * s;
@@ -1654,8 +1618,6 @@
       ctx.lineTo(x, y);
     }
     ctx.stroke();
-
-    // Branches
     for (let b = 0; b < 3; b++) {
       ctx.beginPath();
       const bx = cx + (Math.random() - 0.5) * 30 * s;
@@ -1709,16 +1671,12 @@
     ctx.strokeStyle = color;
     ctx.lineWidth = 1.5 * s;
     setGlow(ctx, color, 10 * s);
-
-    // 4 crosshair lines
     ctx.beginPath();
     ctx.moveTo(cx - len, cy); ctx.lineTo(cx - gap, cy);
     ctx.moveTo(cx + gap, cy); ctx.lineTo(cx + len, cy);
     ctx.moveTo(cx, cy - len); ctx.lineTo(cx, cy - gap);
     ctx.moveTo(cx, cy + gap); ctx.lineTo(cx, cy + len);
     ctx.stroke();
-
-    // Rotating outer ring
     ctx.beginPath();
     for (let i = 0; i <= 60; i++) {
       const a = (i / 60) * Math.PI * 2 + t * 1.5;
@@ -1728,8 +1686,6 @@
       else ctx.lineTo(x, y);
     }
     ctx.stroke();
-
-    // Center dot
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(cx, cy, 2 * s, 0, Math.PI * 2);
@@ -1743,13 +1699,11 @@
     setGlow(ctx, color, 6 * s);
     const size = 60 * s;
     const step = size / 4;
-    // Perspective grid around target
     for (let i = -4; i <= 4; i++) {
       ctx.beginPath();
       ctx.moveTo(cx + i * step, cy - size * 0.5);
       ctx.lineTo(cx + i * step * 0.7, cy + size * 0.5);
       ctx.stroke();
-
       ctx.beginPath();
       ctx.moveTo(cx - size, cy + i * step * 0.5);
       ctx.lineTo(cx + size, cy + i * step * 0.5);
@@ -1818,7 +1772,6 @@
       const y = cy + 40 * s - ph * 80 * s;
       const alpha = 1 - ph;
       ctx.fillStyle = hexA(color, alpha);
-      // Arrow
       ctx.beginPath();
       ctx.moveTo(x, y - 4 * s);
       ctx.lineTo(x + 3 * s, y + 2 * s);
@@ -1859,7 +1812,6 @@
     ctx.lineWidth = 1.4 * s;
     setGlow(ctx, color, 8 * s);
     const R = 42 * s;
-    // 3 ellipses at different rotations
     for (let k = 0; k < 3; k++) {
       const rot = t * (0.6 + k * 0.3);
       ctx.beginPath();
@@ -1874,19 +1826,14 @@
     ctx.strokeStyle = color;
     ctx.lineWidth = 1.5 * s;
     setGlow(ctx, color, 10 * s);
-
     const bounce = Math.abs(Math.sin(t * 2)) * 6 * s;
     const y = cy - 60 * s + bounce;
-
-    // Downward arrow
     ctx.beginPath();
     ctx.moveTo(cx - 8 * s, y);
     ctx.lineTo(cx + 8 * s, y);
     ctx.lineTo(cx, y + 12 * s);
     ctx.closePath();
     ctx.fill();
-
-    // Pulsing ring under target
     const ringR = (35 + Math.sin(t * 3) * 4) * s;
     ctx.beginPath();
     ctx.ellipse(cx, cy + 30 * s, ringR, ringR * 0.3, 0, 0, Math.PI * 2);
@@ -1913,7 +1860,6 @@
     clearGlow(ctx);
   }
 
-  /* --- Хелпер: hex → rgba --- */
   function hexA(hex, a) {
     if (hex.startsWith('hsl')) return hex;
     const h = hex.replace('#', '');
@@ -1923,9 +1869,6 @@
     return `rgba(${r}, ${g}, ${b}, ${a})`;
   }
 
-  /* ================================================================
-     ARRAY OF EFFECT FUNCTIONS
-     ================================================================ */
   const FX_FNS = [
     fx_aura, fx_crystals, fx_helix, fx_shockwave, fx_compass,
     fx_inferno, fx_glacier, fx_thunder, fx_blackhole, fx_pulse,
@@ -1933,11 +1876,8 @@
     fx_ascension, fx_meteor, fx_gyro, fx_marker, fx_spectrum
   ];
 
-  /* ================================================================
-     CANVAS MANAGER — рисует эффекты на всех canvas'ах
-     ================================================================ */
-
-  const canvases = []; // { canvas, ctx, effectIndex, isHero, getScale }
+  /* ================= CANVAS MANAGER ================= */
+  const canvases = [];
 
   function registerCanvas(canvas, effectIndex, isHero) {
     const ctx = canvas.getContext('2d');
@@ -1950,8 +1890,8 @@
   function resizeEntry(entry) {
     const rect = entry.canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    entry.canvas.width  = rect.width * dpr;
-    entry.canvas.height = rect.height * dpr;
+    entry.canvas.width  = Math.max(1, rect.width * dpr);
+    entry.canvas.height = Math.max(1, rect.height * dpr);
     entry.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     entry.w = rect.width;
     entry.h = rect.height;
@@ -1963,38 +1903,31 @@
 
   function render(ts) {
     const t = ts / 1000;
-
     for (const entry of canvases) {
-      // Отрисовываем только видимые
       const rect = entry.canvas.getBoundingClientRect();
       if (rect.bottom < -100 || rect.top > innerHeight + 100) continue;
 
       const ctx = entry.ctx;
       const w = entry.w;
       const h = entry.h;
+      if (!w || !h) continue;
 
       ctx.clearRect(0, 0, w, h);
-
       const cx = w / 2;
       const cy = h / 2;
       const s = entry.isHero ? 1 : 0.5;
 
-      // Target
       drawTarget(ctx, cx, cy + (entry.isHero ? 10 : 0), entry.isHero ? 80 : 40);
 
-      // Effect
       const effect = EFFECTS[entry.effectIndex];
       const fn = FX_FNS[entry.effectIndex];
       if (fn) fn(ctx, cx, cy, t, effect.color, s);
     }
-
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
 
-  /* ================================================================
-     HERO — большая сцена + switcher
-     ================================================================ */
+  /* ================= HERO + SWITCHER ================= */
   const heroCanvas = document.getElementById('hero-canvas');
   const heroEntry = registerCanvas(heroCanvas, 0, true);
 
@@ -2006,8 +1939,6 @@
     currentEffect = idx;
     heroEntry.effectIndex = idx;
     hudName.textContent = EFFECTS[idx].name;
-
-    // Update active button
     switcher.querySelectorAll('button').forEach((b, i) => {
       b.classList.toggle('active', i === idx);
     });
@@ -2023,7 +1954,6 @@
 
   selectEffect(0);
 
-  // Keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') {
       selectEffect((currentEffect + 1) % 20);
@@ -2036,17 +1966,13 @@
     }
   });
 
-  // Кнопки в switcher-е для mobile-пользователей
-  // Показываем kb-hint через 3 секунды, скрываем через 8
   const hint = document.getElementById('kb-hint');
   setTimeout(() => hint.classList.remove('hidden'), 100);
   window.addEventListener('scroll', () => {
     if (scrollY > 100) hint.classList.add('hidden');
   }, { passive: true });
 
-  /* ================================================================
-     EFFECT CARDS GRID
-     ================================================================ */
+  /* ================= EFFECTS GRID ================= */
   const grid = document.getElementById('fx-grid');
   EFFECTS.forEach((e, i) => {
     const num = String(i + 1).padStart(2, '0');
@@ -2066,22 +1992,17 @@
     `;
     grid.appendChild(card);
 
-    // Register canvas for this card
     const canvas = card.querySelector('canvas');
     registerCanvas(canvas, i, false);
   });
 
-  /* ================================================================
-     NAV scroll state
-     ================================================================ */
+  /* ================= NAV SCROLL ================= */
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('on', scrollY > 20);
   }, { passive: true });
 
-  /* ================================================================
-     Reveal on scroll
-     ================================================================ */
+  /* ================= REVEAL ================= */
   const io = new IntersectionObserver((entries) => {
     entries.forEach(en => {
       if (en.isIntersecting) {
@@ -2098,9 +2019,7 @@
     io.observe(el);
   });
 
-  /* ================================================================
-     Smooth scroll
-     ================================================================ */
+  /* ================= SMOOTH SCROLL ================= */
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href');
